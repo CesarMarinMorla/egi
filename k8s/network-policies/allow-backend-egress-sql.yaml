@@ -1,0 +1,19 @@
+# Backend → SQL Server (VM externa). Ajustar IP según la red VirtualBox.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backend-egress-sql
+  namespace: inventario-itu
+spec:
+  podSelector:
+    matchLabels:
+      app: inventario-backend
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 192.168.56.30/32
+      ports:
+        - protocol: TCP
+          port: 1433

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventario-backend
+  namespace: inventario-itu
+  labels:
+    app: inventario-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: inventario-backend
+  ports:
+    - name: http
+      port: 3001
+      targetPort: http

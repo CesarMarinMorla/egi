@@ -1,0 +1,11 @@
+# Bloquea todo el tráfico por defecto en el namespace.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all-default
+  namespace: inventario-itu
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress

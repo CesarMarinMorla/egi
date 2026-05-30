@@ -1,0 +1,40 @@
+# Nginx → backend (proxy /api).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-web-to-backend
+  namespace: inventario-itu
+spec:
+  podSelector:
+    matchLabels:
+      app: inventario-backend
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: inventario-web
+      ports:
+        - protocol: TCP
+          port: 3001
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-web-egress-backend
+  namespace: inventario-itu
+spec:
+  podSelector:
+    matchLabels:
+      app: inventario-web
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: inventario-backend
+      ports:
+        - protocol: TCP
+          port: 3001

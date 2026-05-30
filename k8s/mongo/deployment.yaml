@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventario-db
+  namespace: inventario-itu
+  labels:
+    app: inventario-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventario-db
+  template:
+    metadata:
+      labels:
+        app: inventario-db
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 27017
+              name: mongo
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: inventario-db-pvc
