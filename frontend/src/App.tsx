@@ -5,6 +5,7 @@ import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
+import MachineDetail from './pages/MachineDetail'
 import NotFound from './pages/NotFound'
 import Users from './pages/Users'
 
@@ -33,6 +34,7 @@ function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />
+          <Route path="machines/:id" element={<MachineDetail />} />
           <Route path="users" element={<Users />} />
         </Route>
       </Route>

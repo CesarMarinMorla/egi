@@ -1,4 +1,6 @@
+import { useNavigate } from 'react-router-dom'
 import type { Machine, MachineStatus } from '../types'
+import { formatDate } from '../utils/format'
 
 const STATUS_LABEL: Record<MachineStatus, string> = {
   active: 'Activa',
@@ -12,15 +14,13 @@ const ASSIGNEE_LABEL = {
   technician: 'Técnico',
 } as const
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-AR')
-}
-
 interface MachineTableProps {
   machines: Machine[]
 }
 
 export default function MachineTable({ machines }: MachineTableProps) {
+  const navigate = useNavigate()
+
   if (machines.length === 0) {
     return <p className="table-empty">No hay máquinas para mostrar.</p>
   }
@@ -40,7 +40,11 @@ export default function MachineTable({ machines }: MachineTableProps) {
         </thead>
         <tbody>
           {machines.map((machine) => (
-            <tr key={machine.id}>
+            <tr
+              key={machine.id}
+              className="row-clickable"
+              onClick={() => navigate(`/machines/${machine.id}`)}
+            >
               <td className="cell-mono">{machine.hostname}</td>
               <td>{machine.lab}</td>
               <td>{machine.benchNumber}</td>

@@ -32,3 +32,19 @@ export interface Machine {
   assignee?: string
   assigneeType?: AssigneeType
 }
+
+export type HardwareType = 'desktop' | 'laptop'
+
+export interface Hardware {
+  machineId: number
+  type: HardwareType
+  manufacturer: string
+  model: string
+  cpu: string
+  ramGb: number
+  diskGb: number
+  os: string
+  monitor: string
+  mouse: string
+  keyboard: string
+}

@@ -9,3 +9,8 @@ export async function mockGetMachines(): Promise<Machine[]> {
   await delay(300)
   return [...MOCK_MACHINES]
 }
+
+export async function mockGetMachine(id: number): Promise<Machine | null> {
+  await delay(200)
+  return MOCK_MACHINES.find((machine) => machine.id === id) ?? null
+}
