@@ -1,4 +1,6 @@
-export const AUTH_USERS = [
+import type { AdUser, Hardware, Machine, User } from '../types/index.js'
+
+export const AUTH_USERS: User[] = [
   {
     id: '1',
     username: 'sysadmin',
@@ -36,7 +38,7 @@ export const AUTH_USERS = [
   },
 ]
 
-export const SEED_MACHINES = [
+export const SEED_MACHINES: Machine[] = [
   {
     id: 1,
     hostname: 'lab101-pc01',
@@ -151,7 +153,7 @@ export const SEED_MACHINES = [
   },
 ]
 
-export const SEED_HARDWARE = [
+export const SEED_HARDWARE: Hardware[] = [
   {
     machineId: 1,
     type: 'desktop',
@@ -284,7 +286,7 @@ export const SEED_HARDWARE = [
   },
 ]
 
-export const SEED_AD_USERS = [
+export const SEED_AD_USERS: AdUser[] = [
   {
     id: 'ad-1',
     username: 'sysadmin',

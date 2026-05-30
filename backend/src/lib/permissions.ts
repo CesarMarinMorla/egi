@@ -1,4 +1,6 @@
-const ROLE_LEVEL = {
+import type { User, UserRole } from '../types/index.js'
+
+const ROLE_LEVEL: Record<UserRole, number> = {
   readonly: 0,
   operator: 1,
   editor: 2,
@@ -6,7 +8,14 @@ const ROLE_LEVEL = {
   sysadmin: 4,
 }
 
-export function can(user, action, resource) {
+type Resource = 'inventory' | 'users'
+type Action = 'read' | 'create' | 'update' | 'delete'
+
+export function can(
+  user: User | undefined | null,
+  action: Action,
+  resource: Resource,
+): boolean {
   if (!user) return false
 
   if (resource === 'users') {
@@ -28,7 +37,8 @@ export function can(user, action, resource) {
   }
 }
 
-export function canAccessLab(user, lab) {
+export function canAccessLab(user: User | undefined | null, lab: string): boolean {
+  if (!user) return false
   if (user.role === 'sysadmin' || user.role === 'manager') return true
   return user.labs.includes(lab)
 }
