@@ -9,37 +9,54 @@ interface HardwarePanelProps {
   hardware: Hardware | null
   canEdit: boolean
   canCreate: boolean
+  canDelete: boolean
+  onEdit: () => void
+  onCreate: () => void
+  onDelete: () => void
 }
 
 export default function HardwarePanel({
   hardware,
   canEdit,
   canCreate,
+  canDelete,
+  onEdit,
+  onCreate,
+  onDelete,
 }: HardwarePanelProps) {
   return (
     <section className="detail-card">
       <header className="detail-card__header">
         <h2>Hardware</h2>
-        {hardware && canEdit && (
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            disabled
-            title="Próximo paso: modal de edición"
-          >
-            Editar
-          </button>
-        )}
-        {!hardware && canCreate && (
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            disabled
-            title="Próximo paso: modal de alta"
-          >
-            Agregar hardware
-          </button>
-        )}
+        <div className="detail-card__actions">
+          {hardware && canEdit && (
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={onEdit}
+            >
+              Editar
+            </button>
+          )}
+          {!hardware && canCreate && (
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={onCreate}
+            >
+              Agregar hardware
+            </button>
+          )}
+          {hardware && canDelete && (
+            <button
+              type="button"
+              className="btn btn-danger btn-sm"
+              onClick={onDelete}
+            >
+              Eliminar
+            </button>
+          )}
+        </div>
       </header>
 
       {!hardware ? (

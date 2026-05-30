@@ -16,9 +16,14 @@ const ASSIGNEE_LABEL = {
 interface LocationPanelProps {
   machine: Machine
   canEdit: boolean
+  onEdit: () => void
 }
 
-export default function LocationPanel({ machine, canEdit }: LocationPanelProps) {
+export default function LocationPanel({
+  machine,
+  canEdit,
+  onEdit,
+}: LocationPanelProps) {
   return (
     <section className="detail-card">
       <header className="detail-card__header">
@@ -27,8 +32,7 @@ export default function LocationPanel({ machine, canEdit }: LocationPanelProps) 
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            disabled
-            title="Próximo paso: modal de edición"
+            onClick={onEdit}
           >
             Editar
           </button>

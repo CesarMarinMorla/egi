@@ -48,3 +48,8 @@ export interface Hardware {
   mouse: string
   keyboard: string
 }
+
+export type MachineInput = Omit<Machine, 'id'>
+export type HardwareInput = Omit<Hardware, 'machineId'>
+
+export const ALL_LABS = ['Lab 101', 'Lab 102', 'Lab 201'] as const

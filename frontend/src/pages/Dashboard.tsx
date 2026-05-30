@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import MachineFormModal from '../components/MachineFormModal'
 import MachineTable from '../components/MachineTable'
 import { useAuth } from '../context/AuthContext'
 import { can, canAccessLab } from '../hooks/usePermissions'
-import { getMachines } from '../services/api'
-import type { Machine } from '../types'
+import { createMachine, getMachines } from '../services/api'
+import { ALL_LABS, type Machine } from '../types'
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -11,6 +12,7 @@ export default function Dashboard() {
   const [labFilter, setLabFilter] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [createModalOpen, setCreateModalOpen] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -55,7 +57,24 @@ export default function Dashboard() {
     return scopedMachines.filter((machine) => machine.lab === labFilter)
   }, [scopedMachines, labFilter])
 
+  const createLabs = useMemo(() => {
+    if (!user) return []
+    if (user.role === 'sysadmin' || user.role === 'manager') {
+      return [...ALL_LABS]
+    }
+    return user.labs
+  }, [user])
+
   const canCreate = user ? can(user, 'create', 'inventory') : false
+
+  async function handleCreate(input: Parameters<typeof createMachine>[0]) {
+    if (!user || !canAccessLab(user, input.lab)) {
+      throw new Error('No tenés permiso para crear en ese laboratorio')
+    }
+
+    const created = await createMachine(input)
+    setMachines((prev) => [...prev, created])
+  }
 
   return (
     <section className="page">
@@ -68,12 +87,11 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {canCreate && (
+        {canCreate && createLabs.length > 0 && (
           <button
             type="button"
             className="btn btn-primary"
-            disabled
-            title="Próximo paso: modal de alta"
+            onClick={() => setCreateModalOpen(true)}
           >
             Nueva máquina
           </button>
@@ -105,6 +123,13 @@ export default function Dashboard() {
       ) : (
         <MachineTable machines={filteredMachines} />
       )}
+
+      <MachineFormModal
+        open={createModalOpen}
+        labs={createLabs}
+        onClose={() => setCreateModalOpen(false)}
+        onSubmit={handleCreate}
+      />
     </section>
   )
 }
