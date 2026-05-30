@@ -1,6 +1,6 @@
 import type { Response, NextFunction } from 'express'
 import { can } from '../lib/permissions.js'
-import type { AuthRequest } from './authMiddleware.js'
+import type { AuthRequest } from './auth.middleware.js'
 
 export function requirePermission(action: string, resource: string) {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {

@@ -1,23 +1,12 @@
-import config from '../config.js'
-import { AUTH_USERS } from '../mock/seed.js'
 import type { User } from '../types/index.js'
 
-export async function authenticate(
-  username: string,
-  password: string,
-): Promise<User> {
-  if (config.mockMode) {
-    const user = AUTH_USERS.find(
-      (u) =>
-        u.username.toLowerCase() === String(username).trim().toLowerCase(),
-    )
+export interface ILdapClient {
+  authenticate(username: string, password: string): Promise<User>
+}
 
-    if (!user) {
-      throw new Error('Usuario o contraseña incorrectos')
-    }
+export async function createLdapClient(): Promise<ILdapClient> {
+  // const client = await LdapClient.bind(process.env.LDAP_URL)
+  // return { ... }
 
-    return { ...user, labs: [...user.labs] }
-  }
-
-  throw new Error('LDAP real no configurado')
+  throw new Error('LDAP no configurado. Usar mock mode.')
 }
