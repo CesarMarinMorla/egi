@@ -1,11 +1,14 @@
 import type {
   AdUser,
   AdUserInput,
+  AuthSession,
   Hardware,
   HardwareInput,
   Machine,
   MachineInput,
 } from '../types'
+import { apiFetch, readApiError } from './http'
+import { mockLogin } from './mock/auth'
 import {
   mockCreateAdUser,
   mockDeleteAdUser,
@@ -27,14 +30,35 @@ import {
 
 const useMock = import.meta.env.VITE_USE_MOCK !== 'false'
 
+export async function login(
+  username: string,
+  password: string,
+): Promise<AuthSession> {
+  if (useMock) {
+    return mockLogin(username, password)
+  }
+
+  const response = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  })
+
+  if (!response.ok) {
+    throw new Error(await readApiError(response, 'Error al iniciar sesión'))
+  }
+
+  return response.json() as Promise<AuthSession>
+}
+
 export async function getMachines(): Promise<Machine[]> {
   if (useMock) {
     return mockGetMachines()
   }
 
-  const response = await fetch('/api/machines')
+  const response = await apiFetch('/api/machines')
   if (!response.ok) {
-    throw new Error('No se pudo cargar el inventario')
+    throw new Error(await readApiError(response, 'No se pudo cargar el inventario'))
   }
 
   return response.json() as Promise<Machine[]>
@@ -45,10 +69,10 @@ export async function getMachine(id: number): Promise<Machine | null> {
     return mockGetMachine(id)
   }
 
-  const response = await fetch(`/api/machines/${id}`)
+  const response = await apiFetch(`/api/machines/${id}`)
   if (response.status === 404) return null
   if (!response.ok) {
-    throw new Error('No se pudo cargar la máquina')
+    throw new Error(await readApiError(response, 'No se pudo cargar la máquina'))
   }
 
   return response.json() as Promise<Machine>
@@ -59,14 +83,13 @@ export async function createMachine(input: MachineInput): Promise<Machine> {
     return mockCreateMachine(input)
   }
 
-  const response = await fetch('/api/machines', {
+  const response = await apiFetch('/api/machines', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   })
 
   if (!response.ok) {
-    throw new Error('No se pudo crear la máquina')
+    throw new Error(await readApiError(response, 'No se pudo crear la máquina'))
   }
 
   return response.json() as Promise<Machine>
@@ -82,14 +105,15 @@ export async function updateMachine(
     return updated
   }
 
-  const response = await fetch(`/api/machines/${id}`, {
+  const response = await apiFetch(`/api/machines/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   })
 
   if (!response.ok) {
-    throw new Error('No se pudo actualizar la máquina')
+    throw new Error(
+      await readApiError(response, 'No se pudo actualizar la máquina'),
+    )
   }
 
   return response.json() as Promise<Machine>
@@ -103,9 +127,9 @@ export async function deleteMachine(id: number): Promise<void> {
     return
   }
 
-  const response = await fetch(`/api/machines/${id}`, { method: 'DELETE' })
+  const response = await apiFetch(`/api/machines/${id}`, { method: 'DELETE' })
   if (!response.ok) {
-    throw new Error('No se pudo eliminar la máquina')
+    throw new Error(await readApiError(response, 'No se pudo eliminar la máquina'))
   }
 }
 
@@ -114,10 +138,10 @@ export async function getHardware(machineId: number): Promise<Hardware | null> {
     return mockGetHardware(machineId)
   }
 
-  const response = await fetch(`/api/hardware/${machineId}`)
+  const response = await apiFetch(`/api/hardware/${machineId}`)
   if (response.status === 404) return null
   if (!response.ok) {
-    throw new Error('No se pudo cargar el hardware')
+    throw new Error(await readApiError(response, 'No se pudo cargar el hardware'))
   }
 
   return response.json() as Promise<Hardware>
@@ -131,14 +155,13 @@ export async function saveHardware(
     return mockSaveHardware(machineId, input)
   }
 
-  const response = await fetch(`/api/hardware/${machineId}`, {
+  const response = await apiFetch(`/api/hardware/${machineId}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   })
 
   if (!response.ok) {
-    throw new Error('No se pudo guardar el hardware')
+    throw new Error(await readApiError(response, 'No se pudo guardar el hardware'))
   }
 
   return response.json() as Promise<Hardware>
@@ -151,12 +174,12 @@ export async function deleteHardware(machineId: number): Promise<void> {
     return
   }
 
-  const response = await fetch(`/api/hardware/${machineId}`, {
+  const response = await apiFetch(`/api/hardware/${machineId}`, {
     method: 'DELETE',
   })
 
   if (!response.ok) {
-    throw new Error('No se pudo eliminar el hardware')
+    throw new Error(await readApiError(response, 'No se pudo eliminar el hardware'))
   }
 }
 
@@ -165,9 +188,9 @@ export async function getAdUsers(): Promise<AdUser[]> {
     return mockGetAdUsers()
   }
 
-  const response = await fetch('/api/users')
+  const response = await apiFetch('/api/users')
   if (!response.ok) {
-    throw new Error('No se pudo cargar usuarios AD')
+    throw new Error(await readApiError(response, 'No se pudo cargar usuarios AD'))
   }
 
   return response.json() as Promise<AdUser[]>
@@ -178,14 +201,13 @@ export async function createAdUser(input: AdUserInput): Promise<AdUser> {
     return mockCreateAdUser(input)
   }
 
-  const response = await fetch('/api/users', {
+  const response = await apiFetch('/api/users', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   })
 
   if (!response.ok) {
-    throw new Error('No se pudo crear el usuario')
+    throw new Error(await readApiError(response, 'No se pudo crear el usuario'))
   }
 
   return response.json() as Promise<AdUser>
@@ -201,14 +223,15 @@ export async function updateAdUser(
     return updated
   }
 
-  const response = await fetch(`/api/users/${id}`, {
+  const response = await apiFetch(`/api/users/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   })
 
   if (!response.ok) {
-    throw new Error('No se pudo actualizar el usuario')
+    throw new Error(
+      await readApiError(response, 'No se pudo actualizar el usuario'),
+    )
   }
 
   return response.json() as Promise<AdUser>
@@ -221,8 +244,8 @@ export async function deleteAdUser(id: string): Promise<void> {
     return
   }
 
-  const response = await fetch(`/api/users/${id}`, { method: 'DELETE' })
+  const response = await apiFetch(`/api/users/${id}`, { method: 'DELETE' })
   if (!response.ok) {
-    throw new Error('No se pudo eliminar el usuario')
+    throw new Error(await readApiError(response, 'No se pudo eliminar el usuario'))
   }
 }

@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { AuthSession, User } from '../types'
-import { mockLogin } from '../services/mock/auth'
+import { login as apiLogin } from '../services/api'
 
 const STORAGE_KEY = 'inventario-auth'
 
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (username: string, password: string) => {
     setIsLoading(true)
     try {
-      const next = await mockLogin(username, password)
+      const next = await apiLogin(username, password)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
       setSession(next)
     } finally {
