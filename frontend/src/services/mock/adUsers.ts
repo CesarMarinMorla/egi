@@ -1,0 +1,60 @@
+import type { AdUser } from '../../types'
+
+export const MOCK_AD_USERS: AdUser[] = [
+  {
+    id: 'ad-1',
+    username: 'sysadmin',
+    displayName: 'Admin Sistema',
+    email: 'sysadmin@itu.local',
+    groups: ['GRP_Sysadmin'],
+    enabled: true,
+  },
+  {
+    id: 'ad-2',
+    username: 'manager',
+    displayName: 'María Gestora',
+    email: 'manager@itu.local',
+    groups: ['GRP_Manager'],
+    enabled: true,
+  },
+  {
+    id: 'ad-3',
+    username: 'editor',
+    displayName: 'Carlos Técnico',
+    email: 'editor@itu.local',
+    groups: ['GRP_Editor'],
+    enabled: true,
+  },
+  {
+    id: 'ad-4',
+    username: 'operator',
+    displayName: 'Ana Operadora',
+    email: 'operator@itu.local',
+    groups: ['GRP_Operator'],
+    enabled: true,
+  },
+  {
+    id: 'ad-5',
+    username: 'readonly',
+    displayName: 'Prof. Solo Lectura',
+    email: 'readonly@itu.local',
+    groups: ['GRP_ReadOnly'],
+    enabled: true,
+  },
+  {
+    id: 'ad-6',
+    username: 'jperez',
+    displayName: 'Juan Pérez',
+    email: 'jperez@itu.local',
+    groups: ['GRP_ReadOnly'],
+    enabled: true,
+  },
+  {
+    id: 'ad-7',
+    username: 'mruiz',
+    displayName: 'María Ruiz',
+    email: 'mruiz@itu.local',
+    groups: ['GRP_Editor', 'GRP_Operator'],
+    enabled: false,
+  },
+]

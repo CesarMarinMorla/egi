@@ -53,3 +53,24 @@ export type MachineInput = Omit<Machine, 'id'>
 export type HardwareInput = Omit<Hardware, 'machineId'>
 
 export const ALL_LABS = ['Lab 101', 'Lab 102', 'Lab 201'] as const
+
+export const AD_GROUPS = [
+  'GRP_Sysadmin',
+  'GRP_Manager',
+  'GRP_Editor',
+  'GRP_Operator',
+  'GRP_ReadOnly',
+] as const
+
+export type AdGroup = (typeof AD_GROUPS)[number]
+
+export interface AdUser {
+  id: string
+  username: string
+  displayName: string
+  email: string
+  groups: AdGroup[]
+  enabled: boolean
+}
+
+export type AdUserInput = Omit<AdUser, 'id'>

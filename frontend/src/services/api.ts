@@ -1,4 +1,17 @@
-import type { Hardware, HardwareInput, Machine, MachineInput } from '../types'
+import type {
+  AdUser,
+  AdUserInput,
+  Hardware,
+  HardwareInput,
+  Machine,
+  MachineInput,
+} from '../types'
+import {
+  mockCreateAdUser,
+  mockDeleteAdUser,
+  mockGetAdUsers,
+  mockUpdateAdUser,
+} from './mock/adUserApi'
 import {
   mockDeleteHardware,
   mockGetHardware,
@@ -144,5 +157,72 @@ export async function deleteHardware(machineId: number): Promise<void> {
 
   if (!response.ok) {
     throw new Error('No se pudo eliminar el hardware')
+  }
+}
+
+export async function getAdUsers(): Promise<AdUser[]> {
+  if (useMock) {
+    return mockGetAdUsers()
+  }
+
+  const response = await fetch('/api/users')
+  if (!response.ok) {
+    throw new Error('No se pudo cargar usuarios AD')
+  }
+
+  return response.json() as Promise<AdUser[]>
+}
+
+export async function createAdUser(input: AdUserInput): Promise<AdUser> {
+  if (useMock) {
+    return mockCreateAdUser(input)
+  }
+
+  const response = await fetch('/api/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  })
+
+  if (!response.ok) {
+    throw new Error('No se pudo crear el usuario')
+  }
+
+  return response.json() as Promise<AdUser>
+}
+
+export async function updateAdUser(
+  id: string,
+  input: AdUserInput,
+): Promise<AdUser> {
+  if (useMock) {
+    const updated = await mockUpdateAdUser(id, input)
+    if (!updated) throw new Error('Usuario no encontrado')
+    return updated
+  }
+
+  const response = await fetch(`/api/users/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  })
+
+  if (!response.ok) {
+    throw new Error('No se pudo actualizar el usuario')
+  }
+
+  return response.json() as Promise<AdUser>
+}
+
+export async function deleteAdUser(id: string): Promise<void> {
+  if (useMock) {
+    const deleted = await mockDeleteAdUser(id)
+    if (!deleted) throw new Error('Usuario no encontrado')
+    return
+  }
+
+  const response = await fetch(`/api/users/${id}`, { method: 'DELETE' })
+  if (!response.ok) {
+    throw new Error('No se pudo eliminar el usuario')
   }
 }
