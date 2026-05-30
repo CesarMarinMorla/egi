@@ -30,6 +30,26 @@ jobs:
           echo "IMAGE_WEB=${{ env.REGISTRY }}/${{ github.repository }}/inventario-web:${{ github.sha }}" >> "$GITHUB_ENV"
           echo "IMAGE_BACKEND=${{ env.REGISTRY }}/${{ github.repository }}/inventario-backend:${{ github.sha }}" >> "$GITHUB_ENV"
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Run database schema
+        run: node scripts/bootstrap.mjs
+        working-directory: backend
+        env:
+          SQL_SERVER: ${{ secrets.SQL_SERVER }}
+          SQL_PORT: ${{ secrets.SQL_PORT || '1433' }}
+          SQL_USER: ${{ secrets.SQL_USER }}
+          SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+          SQL_DATABASE: ${{ secrets.SQL_DATABASE || 'inventario_itu' }}
+          SQL_ENCRYPT: ${{ secrets.SQL_ENCRYPT || 'false' }}
+
       - name: Login en GHCR
         uses: docker/login-action@v3
         with:
@@ -83,9 +103,18 @@ jobs:
 
       - name: Esperar rollout
         run: |
-          kubectl rollout status deployment/inventario-db -n "${{ env.NAMESPACE }}" --timeout=180s
           kubectl rollout status deployment/inventario-backend -n "${{ env.NAMESPACE }}" --timeout=180s
           kubectl rollout status deployment/inventario-web -n "${{ env.NAMESPACE }}" --timeout=180s
+
+      - name: Smoke test
+        run: |
+          sleep 5
+          POD=$(kubectl get pod -l app=inventario-backend -n "${{ env.NAMESPACE }}" -o jsonpath='{.items[0].metadata.name}')
+          kubectl exec "$POD" -n "${{ env.NAMESPACE }}" -- sh -c "
+            curl -s -X POST http://localhost:3001/api/auth/login \
+              -H 'Content-Type: application/json' \
+              -d '{\"username\":\"sysadmin\",\"password\":\"x\"}' | grep -q token && echo 'SMOKE ✅' || echo 'SMOKE ❌'
+          "
 
       - name: Resumen
         run: |
