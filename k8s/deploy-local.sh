@@ -9,6 +9,14 @@ eval "$(minikube docker-env)"
 docker build -t inventario-web:latest "$ROOT/frontend"
 docker build -t inventario-backend:latest "$ROOT/backend"
 
+echo "==> Secret local (opcional, solo si usás GHCR)"
+kubectl create secret docker-registry ghcr-credentials \
+  --docker-server=ghcr.io \
+  --docker-username=local \
+  --docker-password=local \
+  --namespace=inventario-itu \
+  --dry-run=client -o yaml | kubectl apply -f - 2>/dev/null || true
+
 echo "==> Aplicar manifiestos"
 kubectl apply -f "$ROOT/k8s/namespace/"
 kubectl apply -f "$ROOT/k8s/mongo/"
