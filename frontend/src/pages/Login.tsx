@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const DEMO_USERS = [
@@ -11,9 +12,15 @@ const DEMO_USERS = [
 
 export default function Login() {
   const { login, isLoading } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+
+  const from =
+    (location.state as { from?: { pathname: string } } | null)?.from
+      ?.pathname ?? '/'
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -21,6 +28,7 @@ export default function Login() {
 
     try {
       await login(username, password)
+      navigate(from, { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión')
     }

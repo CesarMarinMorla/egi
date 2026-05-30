@@ -1,33 +1,51 @@
+import { type ReactNode } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import Layout from './components/Layout'
+import ProtectedRoute from './components/ProtectedRoute'
+import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
+import NotFound from './pages/NotFound'
+import Users from './pages/Users'
 
-function AppContent() {
-  const { isAuthenticated, user, logout } = useAuth()
+function GuestRoute({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth()
 
-  if (!isAuthenticated || !user) {
-    return <Login />
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />
   }
 
+  return children
+}
+
+function AppRoutes() {
   return (
-    <main className="placeholder-shell">
-      <p>
-        Sesión iniciada como <strong>{user.displayName}</strong>{' '}
-        <span className="role-badge">{user.role}</span>
-      </p>
-      {user.labs.length > 0 && (
-        <p className="muted">Labs: {user.labs.join(', ')}</p>
-      )}
-      <button type="button" className="btn btn-secondary" onClick={logout}>
-        Cerrar sesión
-      </button>
-    </main>
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          <GuestRoute>
+            <Login />
+          </GuestRoute>
+        }
+      />
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="users" element={<Users />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   )
 }
 
 export default function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <AppRoutes />
     </AuthProvider>
   )
 }

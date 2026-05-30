@@ -164,14 +164,111 @@ input {
   gap: 0.5rem 1rem;
 }
 
-.placeholder-shell {
+.muted {
+  color: var(--fg-muted);
+}
+
+.app-shell {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header__brand {
+  flex-shrink: 0;
+}
+
+.app-title {
+  color: var(--fg);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.app-title:hover {
+  color: var(--accent);
+}
+
+.app-nav {
+  display: flex;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.nav-link {
+  color: var(--fg-muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.nav-link:hover {
+  color: var(--fg);
+  background: var(--bg-elevated);
+}
+
+.nav-link--active {
+  color: var(--accent);
+  background: var(--bg-elevated);
+}
+
+.app-header__user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  color: var(--fg-muted);
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.app-main {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.page--centered {
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 2rem;
+  min-height: 50vh;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.page-meta {
+  font-size: 0.9rem;
+  color: var(--fg-muted);
 }
 
 .role-badge {
@@ -183,8 +280,4 @@ input {
   font-size: 0.8rem;
   text-transform: uppercase;
   color: var(--green);
-}
-
-.muted {
-  color: var(--fg-muted);
 }
