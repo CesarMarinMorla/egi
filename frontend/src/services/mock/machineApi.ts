@@ -1,0 +1,11 @@
+import type { Machine } from '../../types'
+import { MOCK_MACHINES } from './machines'
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export async function mockGetMachines(): Promise<Machine[]> {
+  await delay(300)
+  return [...MOCK_MACHINES]
+}
