@@ -1,5 +1,27 @@
 # Contribución
 
+## Ramas
+
+| Rama | Propósito |
+|------|-----------|
+| `main` | Producción, siempre estable |
+| `develop` | Integración, base para nuevas features |
+| `feature/<nombre>` | Nueva funcionalidad |
+| `fix/<nombre>` | Corrección de bug |
+| `hotfix/<nombre>` | Corrección urgente sobre `main` |
+
+**Flujo normal:** `feature/*` → `develop` → `main`  
+**Hotfix:** `hotfix/*` → `main` (y merge de vuelta a `develop`)
+
+### Ejemplos de nombres
+
+```
+feature/login-active-directory
+feature/inventario-activos
+fix/paginacion-frontend
+hotfix/crash-autenticacion
+```
+
 ## Convención de commits
 
 Se usa [Conventional Commits](https://www.conventionalcommits.org/).
