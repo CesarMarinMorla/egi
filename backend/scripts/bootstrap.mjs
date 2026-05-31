@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import sql from 'mssql'
 import { readFileSync } from 'fs'
 import { resolve, dirname } from 'path'
