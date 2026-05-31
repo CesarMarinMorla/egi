@@ -38,6 +38,8 @@ export async function apiFetch(path: string, options: RequestInit = {}): Promise
 		headers.set("Authorization", `Bearer ${token}`);
 	}
 
+	headers.set("Cache-Control", "no-store");
+
 	return fetch(path, {
 		...options,
 		headers,
