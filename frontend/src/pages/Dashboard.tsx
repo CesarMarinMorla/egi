@@ -3,12 +3,13 @@ import MachineFormModal from "../components/MachineFormModal";
 import MachineTable from "../components/MachineTable";
 import { useAuth } from "../hooks/useAuth";
 import { can, canAccessLab } from "../hooks/usePermissions";
-import { createMachine, getMachines } from "../services/api";
-import { ALL_LABS, type Machine } from "../types";
+import { createMachine, getAdUsers, getMachines } from "../services/api";
+import { ALL_LABS, type AdUser, type Machine } from "../types";
 
 export default function Dashboard() {
 	const { user } = useAuth();
 	const [machines, setMachines] = useState<Machine[]>([]);
+	const [users, setUsers] = useState<AdUser[]>([]);
 	const [labFilter, setLabFilter] = useState("all");
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -22,8 +23,11 @@ export default function Dashboard() {
 			setError(null);
 
 			try {
-				const data = await getMachines();
-				if (!cancelled) setMachines(data);
+				const [data, usersData] = await Promise.all([getMachines(), getAdUsers()]);
+				if (!cancelled) {
+					setMachines(data);
+					setUsers(usersData);
+				}
 			} catch (err) {
 				if (!cancelled) {
 					setError(err instanceof Error ? err.message : "Error al cargar máquinas");
@@ -117,6 +121,7 @@ export default function Dashboard() {
 			<MachineFormModal
 				open={createModalOpen}
 				labs={createLabs}
+				users={users}
 				onClose={() => setCreateModalOpen(false)}
 				onSubmit={handleCreate}
 			/>

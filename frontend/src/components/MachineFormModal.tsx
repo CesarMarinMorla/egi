@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import type { AssigneeType, Machine, MachineInput, MachineStatus } from "../types";
+import type { AdUser, AssigneeType, Machine, MachineInput, MachineStatus } from "../types";
 import Modal from "./Modal";
 import { validateMachineInput } from "../utils/validation";
 import { ZodError } from "zod";
@@ -8,6 +8,7 @@ interface MachineFormModalProps {
 	open: boolean;
 	machine?: Machine;
 	labs: string[];
+	users: AdUser[];
 	onClose: () => void;
 	onSubmit: (input: MachineInput) => Promise<void>;
 }
@@ -20,7 +21,7 @@ const EMPTY_FORM: MachineInput = {
 	status: "active",
 };
 
-export default function MachineFormModal({ open, machine, labs, onClose, onSubmit }: MachineFormModalProps) {
+export default function MachineFormModal({ open, machine, labs, users, onClose, onSubmit }: MachineFormModalProps) {
 	const [form, setForm] = useState<MachineInput>(EMPTY_FORM);
 	const [assignee, setAssignee] = useState("");
 	const [assigneeType, setAssigneeType] = useState<AssigneeType>("student");
@@ -170,7 +171,20 @@ export default function MachineFormModal({ open, machine, labs, onClose, onSubmi
 
 					<label className="field">
 						<span>Asignado a</span>
-						<input value={assignee} onChange={(e) => setAssignee(e.target.value)} placeholder="Opcional" disabled={isSaving} />
+						<select
+							value={assignee}
+							onChange={(e) => setAssignee(e.target.value)}
+							disabled={isSaving}
+						>
+							<option value="">Sin usuario</option>
+							{users
+								.filter((u) => u.enabled)
+								.map((u) => (
+									<option key={u.id} value={u.displayName}>
+										{u.displayName}
+									</option>
+								))}
+						</select>
 					</label>
 
 					<label className="field">

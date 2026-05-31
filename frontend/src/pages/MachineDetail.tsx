@@ -6,8 +6,8 @@ import LocationPanel from "../components/LocationPanel";
 import MachineFormModal from "../components/MachineFormModal";
 import { useAuth } from "../hooks/useAuth";
 import { can, canAccessLab } from "../hooks/usePermissions";
-import { deleteHardware, deleteMachine, getHardware, getMachine, saveHardware, updateMachine } from "../services/api";
-import { ALL_LABS, type Hardware, type Machine, type MachineInput } from "../types";
+import { deleteHardware, deleteMachine, getAdUsers, getHardware, getMachine, saveHardware, updateMachine } from "../services/api";
+import { ALL_LABS, type AdUser, type Hardware, type Machine, type MachineInput } from "../types";
 import { validateMachineId } from "../utils/validation";
 
 export default function MachineDetail() {
@@ -19,6 +19,7 @@ export default function MachineDetail() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [forbidden, setForbidden] = useState(false);
+	const [users, setUsers] = useState<AdUser[]>([]);
 	const [machineModalOpen, setMachineModalOpen] = useState(false);
 	const [hardwareModalOpen, setHardwareModalOpen] = useState(false);
 
@@ -48,11 +49,13 @@ export default function MachineDetail() {
 			}, 0);
 
 			try {
-				const [machineData, hardwareData] = await Promise.all([getMachine(machineId), getHardware(machineId)]);
+				const [machineData, hardwareData, usersData] = await Promise.all([getMachine(machineId), getHardware(machineId), getAdUsers()]);
 
 				clearTimeout(timeoutId);
 
 				if (cancelled) return;
+
+				setUsers(usersData);
 
 				if (!machineData) {
 					setMachine(null);
@@ -233,6 +236,7 @@ export default function MachineDetail() {
 				open={machineModalOpen}
 				machine={currentMachine}
 				labs={editLabs}
+				users={users}
 				onClose={() => setMachineModalOpen(false)}
 				onSubmit={handleUpdateMachine}
 			/>
