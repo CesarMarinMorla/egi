@@ -137,7 +137,7 @@ Credenciales por defecto (definidas en `backend/.env` y en `docker-compose.yml`)
 |----------|-------|
 | SQL Server | `localhost:1433` |
 | SQL User | `sa` |
-| SQL Password | `YourPass123` |
+| SQL Password | `Mysql123` |
 | MongoDB | `mongodb://localhost:27017` |
 
 Para detener las bases de datos:
