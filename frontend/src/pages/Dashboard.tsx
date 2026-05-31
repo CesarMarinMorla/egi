@@ -1,135 +1,125 @@
-import { useEffect, useMemo, useState } from 'react'
-import MachineFormModal from '../components/MachineFormModal'
-import MachineTable from '../components/MachineTable'
-import { useAuth } from '../context/AuthContext'
-import { can, canAccessLab } from '../hooks/usePermissions'
-import { createMachine, getMachines } from '../services/api'
-import { ALL_LABS, type Machine } from '../types'
+import { useEffect, useMemo, useState } from "react";
+import MachineFormModal from "../components/MachineFormModal";
+import MachineTable from "../components/MachineTable";
+import { useAuth } from "../hooks/useAuth";
+import { can, canAccessLab } from "../hooks/usePermissions";
+import { createMachine, getMachines } from "../services/api";
+import { ALL_LABS, type Machine } from "../types";
 
 export default function Dashboard() {
-  const { user } = useAuth()
-  const [machines, setMachines] = useState<Machine[]>([])
-  const [labFilter, setLabFilter] = useState('all')
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [createModalOpen, setCreateModalOpen] = useState(false)
+	const { user } = useAuth();
+	const [machines, setMachines] = useState<Machine[]>([]);
+	const [labFilter, setLabFilter] = useState("all");
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [createModalOpen, setCreateModalOpen] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false
+	useEffect(() => {
+		let cancelled = false;
 
-    async function load() {
-      setIsLoading(true)
-      setError(null)
+		async function load() {
+			setIsLoading(true);
+			setError(null);
 
-      try {
-        const data = await getMachines()
-        if (!cancelled) setMachines(data)
-      } catch (err) {
-        if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : 'Error al cargar máquinas',
-          )
-        }
-      } finally {
-        if (!cancelled) setIsLoading(false)
-      }
-    }
+			try {
+				const data = await getMachines();
+				if (!cancelled) setMachines(data);
+			} catch (err) {
+				if (!cancelled) {
+					setError(err instanceof Error ? err.message : "Error al cargar máquinas");
+				}
+			} finally {
+				if (!cancelled) setIsLoading(false);
+			}
+		}
 
-    load()
+		load();
 
-    return () => {
-      cancelled = true
-    }
-  }, [])
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
-  const scopedMachines = useMemo(() => {
-    if (!user) return []
-    return machines.filter((machine) => canAccessLab(user, machine.lab))
-  }, [machines, user])
+	const scopedMachines = useMemo(() => {
+		if (!user) return [];
+		return machines.filter((machine) => canAccessLab(user, machine.lab));
+	}, [machines, user]);
 
-  const availableLabs = useMemo(() => {
-    const labs = new Set(scopedMachines.map((machine) => machine.lab))
-    return [...labs].sort()
-  }, [scopedMachines])
+	const availableLabs = useMemo(() => {
+		const labs = new Set(scopedMachines.map((machine) => machine.lab));
+		return [...labs].sort();
+	}, [scopedMachines]);
 
-  const filteredMachines = useMemo(() => {
-    if (labFilter === 'all') return scopedMachines
-    return scopedMachines.filter((machine) => machine.lab === labFilter)
-  }, [scopedMachines, labFilter])
+	const filteredMachines = useMemo(() => {
+		if (labFilter === "all") return scopedMachines;
+		return scopedMachines.filter((machine) => machine.lab === labFilter);
+	}, [scopedMachines, labFilter]);
 
-  const createLabs = useMemo(() => {
-    if (!user) return []
-    if (user.role === 'sysadmin' || user.role === 'manager') {
-      return [...ALL_LABS]
-    }
-    return user.labs
-  }, [user])
+	const createLabs = useMemo(() => {
+		if (!user) return [];
+		if (user.role === "sysadmin" || user.role === "manager") {
+			return [...ALL_LABS];
+		}
+		return user.labs;
+	}, [user]);
 
-  const canCreate = user ? can(user, 'create', 'inventory') : false
+	const canCreate = user ? can(user, "create", "inventory") : false;
 
-  async function handleCreate(input: Parameters<typeof createMachine>[0]) {
-    if (!user || !canAccessLab(user, input.lab)) {
-      throw new Error('No tenés permiso para crear en ese laboratorio')
-    }
+	async function handleCreate(input: Parameters<typeof createMachine>[0]) {
+		if (!user || !canAccessLab(user, input.lab)) {
+			throw new Error("No tenés permiso para crear en ese laboratorio");
+		}
 
-    const created = await createMachine(input)
-    setMachines((prev) => [...prev, created])
-  }
+		const created = await createMachine(input);
+		setMachines((prev) => [...prev, created]);
+	}
 
-  return (
-    <section className="page">
-      <header className="page-header page-header--row">
-        <div>
-          <h1>Inventario</h1>
-          <p className="muted">
-            {scopedMachines.length} máquina
-            {scopedMachines.length !== 1 ? 's' : ''} en tu alcance
-          </p>
-        </div>
+	return (
+		<section className="page">
+			<header className="page-header page-header--row">
+				<div>
+					<h1>Inventario</h1>
+					<p className="muted">
+						{scopedMachines.length} máquina
+						{scopedMachines.length !== 1 ? "s" : ""} en tu alcance
+					</p>
+				</div>
 
-        {canCreate && createLabs.length > 0 && (
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setCreateModalOpen(true)}
-          >
-            Nueva máquina
-          </button>
-        )}
-      </header>
+				{canCreate && createLabs.length > 0 && (
+					<button type="button" className="btn btn-primary" onClick={() => setCreateModalOpen(true)}>
+						Nueva máquina
+					</button>
+				)}
+			</header>
 
-      <div className="toolbar">
-        <label className="field field--inline">
-          <span>Laboratorio</span>
-          <select
-            value={labFilter}
-            onChange={(e) => setLabFilter(e.target.value)}
-            disabled={isLoading || availableLabs.length === 0}
-          >
-            <option value="all">Todos</option>
-            {availableLabs.map((lab) => (
-              <option key={lab} value={lab}>
-                {lab}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+			<div className="toolbar">
+				<label className="field field--inline">
+					<span>Laboratorio</span>
+					<select
+						value={labFilter}
+						onChange={(e) => setLabFilter(e.target.value)}
+						disabled={isLoading || availableLabs.length === 0}
+					>
+						<option value="all">Todos</option>
+						{availableLabs.map((lab) => (
+							<option key={lab} value={lab}>
+								{lab}
+							</option>
+						))}
+					</select>
+				</label>
+			</div>
 
-      {error && <p className="form-error">{error}</p>}
+			{error && <p className="form-error">{error}</p>}
 
-      {isLoading ? (
-        <p className="muted">Cargando inventario…</p>
-      ) : (
-        <MachineTable machines={filteredMachines} />
-      )}
+			{isLoading ? <p className="muted">Cargando inventario…</p> : <MachineTable machines={filteredMachines} />}
 
-      <MachineFormModal
-        open={createModalOpen}
-        labs={createLabs}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreate}
-      />
-    </section>
-  )
+			<MachineFormModal
+				open={createModalOpen}
+				labs={createLabs}
+				onClose={() => setCreateModalOpen(false)}
+				onSubmit={handleCreate}
+			/>
+		</section>
+	);
 }
