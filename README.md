@@ -166,7 +166,7 @@ minikube service inventario-web -n inventario-itu --url
 ### Health check del backend
 
 ```bash
-curl http://localhost:3001/api/health
+curl http://localhost:3001/health
 ```
 
 **Mock mode:** `{"status":"ok","mockMode":true}`
