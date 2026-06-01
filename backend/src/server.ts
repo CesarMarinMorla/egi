@@ -22,16 +22,22 @@ async function importMockRepos() {
 }
 
 async function importRealRepos() {
-  const [sqlModule, mockHr, mockUr] = await Promise.all([
+  const [sqlModule, mongoModule, mockUr] = await Promise.all([
     import('./db/sqlClient.js'),
-    import('./mock/repositories/hardware.repository.js'),
+    import('./db/mongoClient.js'),
+    // import('./mock/repositories/hardware.repository.js'),  // ← descomentar para mock hardware
     import('./mock/repositories/user.repository.js'),
   ])
-  const { createSqlMachineRepository } = await import('./repositories/sql/machine.repository.js')
+  const [sqlMachineRepo, mongoHardwareRepo] = await Promise.all([
+    import('./repositories/sql/machine.repository.js'),
+    import('./repositories/mongo/hardware.repository.js'),
+  ])
   const sqlClient = await sqlModule.createSqlClient()
+  const mongoClient = await mongoModule.createMongoClient()
   return {
-    machineRepo: createSqlMachineRepository(sqlClient),
-    hardwareRepo: mockHr.mockHardwareRepository,
+    machineRepo: sqlMachineRepo.createSqlMachineRepository(sqlClient),
+    // hardwareRepo: mockHr.mockHardwareRepository  ← descomentar y comentar la de abajo para mock
+    hardwareRepo: mongoHardwareRepo.createMongoHardwareRepository(mongoClient),
     authRepo: mockUr.mockAuthRepository,
     userRepo: mockUr.mockUserRepository,
   }
