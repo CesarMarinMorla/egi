@@ -116,11 +116,11 @@ El frontend usa `VITE_USE_MOCK=false` en `.env.development`.
 
 ## Persistencia
 
-| Dato | Backend | Notas |
-|------|---------|-------|
-| Máquinas | SQL Server (`machines`) | Siempre real con `MOCK_MODE=false` |
-| Hardware | MongoDB (`hardware`) | Real via `mongoClient.ts` (wired en `server.ts`) |
-| Usuarios / Auth | Mock (en memoria) | El cliente LDAP existe pero no está conectado |
+| Dato            | Backend                 | Notas                                            |
+| --------------- | ----------------------- | ------------------------------------------------ |
+| Máquinas        | SQL Server (`machines`) | Siempre real con `MOCK_MODE=false`               |
+| Hardware        | MongoDB (`hardware`)    | Real via `mongoClient.ts` (wired en `server.ts`) |
+| Usuarios / Auth | Mock (en memoria)       | El cliente LDAP existe pero no está conectado    |
 
 El backend arranca en **mock mode** (`MOCK_MODE=true`) por defecto — todo usa arreglos en memoria. Con `MOCK_MODE=false` usa SQL Server y MongoDB reales.
 

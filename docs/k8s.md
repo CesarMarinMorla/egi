@@ -59,11 +59,11 @@ kubectl get svc -n inventario-itu
 
 ## Persistencia
 
-| Dato | Backend | K8s |
-|------|---------|-----|
-| Máquinas | SQL Server (`machines`) | Mock (sin SQL Server en el cluster) |
-| Hardware | MongoDB (`hardware`) | Mock (`MOCK_MODE=true`) |
-| Usuarios / Auth | Mock (en memoria) | Mock |
+| Dato            | Backend                 | K8s                                 |
+| --------------- | ----------------------- | ----------------------------------- |
+| Máquinas        | SQL Server (`machines`) | Mock (sin SQL Server en el cluster) |
+| Hardware        | MongoDB (`hardware`)    | Mock (`MOCK_MODE=true`)             |
+| Usuarios / Auth | Mock (en memoria)       | Mock                                |
 
 En el cluster, `MOCK_MODE=true` en el Secret, así que todo usa arreglos en memoria. Para activar modo real, editar `k8s/backend/secret.yaml`: descomentar `MOCK_MODE: "false"`, `MONGO_URI` y `MONGO_DB_NAME`, y apuntar SQL Server a una instancia accesible.
 
