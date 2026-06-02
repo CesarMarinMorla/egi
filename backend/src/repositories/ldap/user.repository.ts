@@ -1,30 +1,27 @@
-import type { IUserRepository } from '../interfaces/IUserRepository.js'
-import type { ILdapClient } from '../../db/ldapClient.js'
-import type { AdUser, AdUserInput } from '../../types/index.js'
+import type { IUserRepository } from "../interfaces/IUserRepository.js";
+import type { ILdapClient } from "../../db/ldapClient.js";
+import type { AdUser, AdUserInput } from "../../types/index.js";
 
-export function createLdapUserRepository(
-  _client: ILdapClient,
-): IUserRepository {
-  return {
-    async list(): Promise<AdUser[]> {
-      // const entries = await client.search('ou=Users,dc=itu,dc=local', ...)
-      throw new Error('LDAP real no implementado')
-    },
+export function createLdapUserRepository(client: ILdapClient): IUserRepository {
+	return {
+		async list(): Promise<AdUser[]> {
+			return await client.listUsers();
+		},
 
-    async getById(_id: string): Promise<AdUser | null> {
-      throw new Error('LDAP real no implementado')
-    },
+		async getById(id: string): Promise<AdUser | null> {
+			return await client.getUserById(id);
+		},
 
-    async create(_input: AdUserInput): Promise<AdUser> {
-      throw new Error('LDAP real no implementado')
-    },
+		async create(input: AdUserInput): Promise<AdUser> {
+			return await client.createUser(input);
+		},
 
-    async update(_id: string, _input: AdUserInput): Promise<AdUser | null> {
-      throw new Error('LDAP real no implementado')
-    },
+		async update(id: string, input: AdUserInput): Promise<AdUser | null> {
+			return await client.updateUser(id, input);
+		},
 
-    async delete(_id: string): Promise<boolean> {
-      throw new Error('LDAP real no implementado')
-    },
-  }
+		async delete(id: string): Promise<boolean> {
+			return await client.deleteUser(id);
+		},
+	};
 }

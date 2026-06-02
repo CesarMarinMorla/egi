@@ -1,175 +1,161 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { AD_GROUPS, type AdGroup, type AdUser, type AdUserInput } from '../types'
-import Modal from './Modal'
+import { useEffect, useState, type FormEvent } from "react";
+import { AD_GROUPS, type AdGroup, type AdUser, type AdUserInput } from "../types";
+import Modal from "./Modal";
+import { validateAdUserInput } from "../utils/validation";
+import { ZodError } from "zod";
 
 interface UserFormModalProps {
-  open: boolean
-  user?: AdUser
-  onClose: () => void
-  onSubmit: (input: AdUserInput) => Promise<void>
+	open: boolean;
+	user?: AdUser;
+	onClose: () => void;
+	onSubmit: (input: AdUserInput) => Promise<void>;
 }
 
 const EMPTY_FORM: AdUserInput = {
-  username: '',
-  displayName: '',
-  email: '',
-  groups: ['GRP_ReadOnly'],
-  enabled: true,
-}
+	username: "",
+	displayName: "",
+	email: "",
+	groups: ["GRP_ReadOnly"],
+	enabled: true,
+};
 
-export default function UserFormModal({
-  open,
-  user,
-  onClose,
-  onSubmit,
-}: UserFormModalProps) {
-  const [form, setForm] = useState<AdUserInput>(EMPTY_FORM)
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export default function UserFormModal({ open, user, onClose, onSubmit }: UserFormModalProps) {
+	const [form, setForm] = useState<AdUserInput>(EMPTY_FORM);
+	const [isSaving, setIsSaving] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
-  const isEdit = user !== undefined
+	const isEdit = user !== undefined;
 
-  useEffect(() => {
-    if (!open) return
+	useEffect(() => {
+		if (!open) return;
 
-    if (user) {
-      setForm({
-        username: user.username,
-        displayName: user.displayName,
-        email: user.email,
-        groups: [...user.groups],
-        enabled: user.enabled,
-      })
-    } else {
-      setForm(EMPTY_FORM)
-    }
+		// Use setTimeout to avoid synchronous setState in effect
+		const timeoutId = setTimeout(() => {
+			if (user) {
+				setForm({
+					username: user.username,
+					displayName: user.displayName,
+					email: user.email,
+					groups: [...user.groups],
+					enabled: user.enabled,
+				});
+			} else {
+				setForm(EMPTY_FORM);
+			}
 
-    setError(null)
-  }, [open, user])
+			setError(null);
+		}, 0);
 
-  function toggleGroup(group: AdGroup) {
-    setForm((prev) => {
-      const hasGroup = prev.groups.includes(group)
-      const groups = hasGroup
-        ? prev.groups.filter((item) => item !== group)
-        : [...prev.groups, group]
+		return () => clearTimeout(timeoutId);
+	}, [open, user]);
 
-      return { ...prev, groups }
-    })
-  }
+	function toggleGroup(group: AdGroup) {
+		setForm((prev) => {
+			const hasGroup = prev.groups.includes(group);
+			const groups = hasGroup ? prev.groups.filter((item) => item !== group) : [...prev.groups, group];
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
+			return { ...prev, groups };
+		});
+	}
 
-    if (form.groups.length === 0) {
-      setError('Seleccioná al menos un grupo AD')
-      return
-    }
+	async function handleSubmit(event: FormEvent) {
+		event.preventDefault();
 
-    setIsSaving(true)
-    setError(null)
+		setIsSaving(true);
+		setError(null);
 
-    try {
-      await onSubmit(form)
-      onClose()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al guardar')
-    } finally {
-      setIsSaving(false)
-    }
-  }
+		try {
+			// Validate form data before submission
+			validateAdUserInput(form);
+			await onSubmit(form);
+			onClose();
+		} catch (err) {
+			if (err instanceof ZodError) {
+				// Format Zod validation errors for display
+				const errorMessages = err.issues.map((e) => e.message).join(", ");
+				setError(errorMessages);
+			} else {
+				setError(err instanceof Error ? err.message : "Error al guardar");
+			}
+		} finally {
+			setIsSaving(false);
+		}
+	}
 
-  return (
-    <Modal
-      open={open}
-      title={isEdit ? 'Editar usuario AD' : 'Nuevo usuario AD'}
-      onClose={onClose}
-    >
-      <form className="modal-form" onSubmit={handleSubmit}>
-        <div className="form-grid">
-          <label className="field">
-            <span>Usuario</span>
-            <input
-              value={form.username}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, username: e.target.value }))
-              }
-              required
-              disabled={isSaving}
-            />
-          </label>
+	return (
+		<Modal open={open} title={isEdit ? "Editar usuario AD" : "Nuevo usuario AD"} onClose={onClose}>
+			<form className="modal-form" onSubmit={handleSubmit}>
+				<div className="form-grid">
+					<label className="field">
+						<span>Usuario</span>
+						<input
+							value={form.username}
+							onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
+							required
+							disabled={isSaving}
+						/>
+					</label>
 
-          <label className="field">
-            <span>Nombre completo</span>
-            <input
-              value={form.displayName}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, displayName: e.target.value }))
-              }
-              required
-              disabled={isSaving}
-            />
-          </label>
+					<label className="field">
+						<span>Nombre completo</span>
+						<input
+							value={form.displayName}
+							onChange={(e) => setForm((prev) => ({ ...prev, displayName: e.target.value }))}
+							required
+							disabled={isSaving}
+						/>
+					</label>
 
-          <label className="field form-grid__wide">
-            <span>Email</span>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, email: e.target.value }))
-              }
-              required
-              disabled={isSaving}
-            />
-          </label>
+					<label className="field form-grid__wide">
+						<span>Email</span>
+						<input
+							type="email"
+							value={form.email}
+							onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+							required
+							disabled={isSaving}
+						/>
+					</label>
 
-          <fieldset className="field form-grid__wide group-fieldset">
-            <legend>Grupos AD</legend>
-            <div className="checkbox-list">
-              {AD_GROUPS.map((group) => (
-                <label key={group} className="checkbox-item">
-                  <input
-                    type="checkbox"
-                    checked={form.groups.includes(group)}
-                    onChange={() => toggleGroup(group)}
-                    disabled={isSaving}
-                  />
-                  <span>{group}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+					<fieldset className="field form-grid__wide group-fieldset">
+						<legend>Grupos AD</legend>
+						<div className="checkbox-list">
+							{AD_GROUPS.map((group) => (
+								<label key={group} className="checkbox-item">
+									<input
+										type="checkbox"
+										checked={form.groups.includes(group)}
+										onChange={() => toggleGroup(group)}
+										disabled={isSaving}
+									/>
+									<span>{group}</span>
+								</label>
+							))}
+						</div>
+					</fieldset>
 
-          <label className="checkbox-item form-grid__wide">
-            <input
-              type="checkbox"
-              checked={form.enabled}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, enabled: e.target.checked }))
-              }
-              disabled={isSaving}
-            />
-            <span>Cuenta habilitada</span>
-          </label>
-        </div>
+					<label className="checkbox-item form-grid__wide">
+						<input
+							type="checkbox"
+							checked={form.enabled}
+							onChange={(e) => setForm((prev) => ({ ...prev, enabled: e.target.checked }))}
+							disabled={isSaving}
+						/>
+						<span>Cuenta habilitada</span>
+					</label>
+				</div>
 
-        {error && <p className="form-error">{error}</p>}
+				{error && <p className="form-error">{error}</p>}
 
-        <div className="modal-actions">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={onClose}
-            disabled={isSaving}
-          >
-            Cancelar
-          </button>
-          <button type="submit" className="btn btn-primary" disabled={isSaving}>
-            {isSaving ? 'Guardando…' : 'Guardar'}
-          </button>
-        </div>
-      </form>
-    </Modal>
-  )
+				<div className="modal-actions">
+					<button type="button" className="btn btn-secondary" onClick={onClose} disabled={isSaving}>
+						Cancelar
+					</button>
+					<button type="submit" className="btn btn-primary" disabled={isSaving}>
+						{isSaving ? "Guardando…" : "Guardar"}
+					</button>
+				</div>
+			</form>
+		</Modal>
+	);
 }
