@@ -83,6 +83,13 @@ flowchart TB
         AD[("Active Directory<br/>192.168.56.40:389")]
     end
 
+    subgraph FW["pfSense Firewall"]
+        direction TB
+        TLS["TLS termination<br/>443 → NodePort 30080"]
+        NAT["NAT / ACL<br/>solo cluster → VMs"]
+        WAF["WAF / rate limiting"]
+    end
+
     subgraph Cluster["Minikube — inventario-itu"]
         direction TB
 
@@ -114,15 +121,18 @@ flowchart TB
         end
     end
 
-    User -->|":30080"| WebSvc
+    User -->|":443 HTTPS"| TLS
+    TLS -->|":30080"| WebSvc
     WebSvc --> WebPod
     WebPod -->|":3001"| BeSvc
     BeSvc --> BePod
     BePod -->|":27017"| MongoSvc
     MongoSvc --> MongoPod
     MongoPod --> MongoPvc
-    BePod -.->|":1433"| SQL
-    BePod -.->|":389"| AD
+    BePod -.->|"egress :1433"| NAT
+    BePod -.->|"egress :389"| NAT
+    NAT -.->|":1433"| SQL
+    NAT -.->|":389"| AD
     BePod -.- BeSec
 ```
 
