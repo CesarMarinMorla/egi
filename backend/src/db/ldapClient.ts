@@ -1,33 +1,5 @@
-import { Client } from "ldapts";
+import { Client, Change, Attribute } from "ldapts";
 import type { User, UserRole, AdUser, AdUserInput } from "../types/index.js";
-
-// Mock data for CRUD operations when real AD operations are too complex
-let mockAdUsers: AdUser[] = [
-	{
-		id: "ad-user-1",
-		username: "admin",
-		displayName: "Administrator",
-		email: "admin@itu.local",
-		groups: ["GRP_Sysadmin"],
-		enabled: true,
-	},
-	{
-		id: "ad-user-2",
-		username: "manager",
-		displayName: "Lab Manager",
-		email: "manager@itu.local",
-		groups: ["GRP_Manager"],
-		enabled: true,
-	},
-	{
-		id: "ad-user-3",
-		username: "technician",
-		displayName: "Lab Technician",
-		email: "tech@itu.local",
-		groups: ["GRP_Editor", "GRP_Editor_Lab101"],
-		enabled: true,
-	},
-];
 
 export interface ILdapClient {
 	authenticate(username: string, password: string): Promise<User>;
@@ -205,33 +177,83 @@ export async function createLdapClient(): Promise<ILdapClient> {
 		},
 
 		async createUser(input: AdUserInput): Promise<AdUser> {
-			const taken = mockAdUsers.some((u) => u.username.toLowerCase() === input.username.toLowerCase());
-			if (taken) throw new Error("Ya existe un usuario con ese nombre");
+			if (!bindDn || !bindPassword) throw new Error("LDAP bind credentials not configured");
 
-			const user: AdUser = {
-				id: `ad-${Date.now()}`,
-				...input,
-				groups: [...input.groups],
-			};
-			mockAdUsers.push(user);
-			return { ...user, groups: [...user.groups] };
+			await client.bind(bindDn, bindPassword);
+
+			const cn = input.displayName || input.username;
+			const dn = `CN=${cn},CN=Users,${searchBase}`;
+
+			const password = input.password ?? "Changeme1!";
+			const encodedPassword = Buffer.from(`"${password}"`, "utf16le");
+
+			await client.add(dn, {
+				objectClass: ["top", "person", "organizationalPerson", "user"],
+				cn,
+				sAMAccountName: input.username,
+				userPrincipalName: `${input.username}@${searchBase.replace(/DC=/gi, "").replace(/,/g, ".")}`,
+				displayName: input.displayName,
+				mail: input.email,
+				unicodePwd: encodedPassword.toString("base64"),
+				userAccountControl: "512",
+			});
+
+			for (const group of input.groups) {
+				try {
+					await client.modify(`CN=${group},CN=Users,${searchBase}`, [
+						new Change({ operation: "add", modification: new Attribute({ type: "member", values: [dn] }) }),
+					]);
+				} catch {
+					// group may not exist, continue
+				}
+			}
+
+			await client.unbind();
+
+			return { id: dn, username: input.username, displayName: input.displayName, email: input.email, groups: input.groups, enabled: input.enabled };
 		},
 
 		async updateUser(id: string, input: AdUserInput): Promise<AdUser | null> {
-			const index = mockAdUsers.findIndex((u) => u.id === id);
-			if (index === -1) return null;
+			if (!bindDn || !bindPassword) throw new Error("LDAP bind credentials not configured");
 
-			const taken = mockAdUsers.some((u) => u.id !== id && u.username.toLowerCase() === input.username.toLowerCase());
-			if (taken) throw new Error("Ya existe un usuario con ese nombre");
+			await client.bind(bindDn, bindPassword);
 
-			mockAdUsers[index] = { id, ...input, groups: [...input.groups] };
-			return { ...mockAdUsers[index], groups: [...mockAdUsers[index].groups] };
+			const modifications: Change[] = [
+				new Change({ operation: "replace", modification: new Attribute({ type: "displayName", values: [input.displayName] }) }),
+				new Change({ operation: "replace", modification: new Attribute({ type: "mail", values: [input.email] }) }),
+				new Change({ operation: "replace", modification: new Attribute({ type: "userAccountControl", values: [input.enabled ? "512" : "514"] }) }),
+			];
+
+			if (input.password) {
+				const encodedPassword = Buffer.from(`"${input.password}"`, "utf16le");
+				modifications.push(new Change({ operation: "replace", modification: new Attribute({ type: "unicodePwd", values: [encodedPassword.toString("base64")] }) }));
+			}
+
+			try {
+				await client.modify(id, modifications);
+			} catch {
+				await client.unbind();
+				return null;
+			}
+
+			await client.unbind();
+
+			return { id, username: input.username, displayName: input.displayName, email: input.email, groups: input.groups, enabled: input.enabled };
 		},
 
 		async deleteUser(id: string): Promise<boolean> {
-			const before = mockAdUsers.length;
-			mockAdUsers = mockAdUsers.filter((u) => u.id !== id);
-			return mockAdUsers.length < before;
+			if (!bindDn || !bindPassword) throw new Error("LDAP bind credentials not configured");
+
+			await client.bind(bindDn, bindPassword);
+
+			try {
+				await client.del(id);
+				await client.unbind();
+				return true;
+			} catch {
+				await client.unbind();
+				return false;
+			}
 		},
 	};
 }
