@@ -13,7 +13,7 @@ spec:
   egress:
     - to:
         - ipBlock:
-            cidr: 192.168.56.40/32
+            cidr: 192.168.1.10/32
       ports:
         - protocol: TCP
           port: 389
