@@ -44,11 +44,11 @@ jobs:
         working-directory: backend
         env:
           SQL_SERVER: ${{ secrets.SQL_SERVER }}
-          SQL_PORT: ${{ secrets.SQL_PORT || '1433' }}
+          SQL_PORT: ${{ secrets.SQL_PORT != '' && secrets.SQL_PORT || '1433' }}
           SQL_USER: ${{ secrets.SQL_USER }}
           SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-          SQL_DATABASE: ${{ secrets.SQL_DATABASE || 'inventario_itu' }}
-          SQL_ENCRYPT: ${{ secrets.SQL_ENCRYPT || 'false' }}
+          SQL_DATABASE: ${{ secrets.SQL_DATABASE != '' && secrets.SQL_DATABASE || 'inventario_itu' }}
+          SQL_ENCRYPT: ${{ secrets.SQL_ENCRYPT != '' && secrets.SQL_ENCRYPT || 'false' }}
 
       - name: Login en GHCR
         uses: docker/login-action@v3
