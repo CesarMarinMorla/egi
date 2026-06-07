@@ -85,10 +85,10 @@ SQL_ENCRYPT: "false"
 MONGO_URI: "mongodb://inventario-db:27017"
 MONGO_DB_NAME: "inventario"
 LDAP_URL: "ldap://192.168.1.10:389"
-LDAP_BASE_DN: "DC=itu,DC=local"
+LDAP_SEARCH_BASE: "DC=itu,DC=local"
 LDAP_BIND_DN: "CN=svc-inventario,CN=Users,DC=itu,DC=local"
 LDAP_BIND_PASSWORD: "<password>"
-LDAP_SEARCH_ATTRIBUTE: "sAMAccountName"
+LDAP_SEARCH_FILTER: "(sAMAccountName={username})"
 ```
 
 ## 7. Instalar el GitHub Actions Runner
