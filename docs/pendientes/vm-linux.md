@@ -91,7 +91,23 @@ LDAP_BIND_PASSWORD: "<password>"
 LDAP_SEARCH_FILTER: "(sAMAccountName={username})"
 ```
 
-## 7. Instalar el GitHub Actions Runner
+## 7. Configurar red del host (iptables)
+
+Minikube con driver `docker` aísla los NodePorts en una red interna. Se requiere DNAT para acceso desde la LAN.
+
+```bash
+# Ejecutar una sola vez
+sudo bash k8s/setup-host-networking.sh
+
+# Hacer persistente (sobrevive reinicios)
+sudo apt install -y iptables-persistent
+sudo netfilter-persistent save
+
+# Verificar
+curl http://192.168.1.50:30080
+```
+
+## 8. Instalar el GitHub Actions Runner
 
 En GitHub: **repo → Settings → Actions → Runners → New self-hosted runner → Linux x64**. Seguir los comandos que genera GitHub. Al final:
 
@@ -104,7 +120,7 @@ sudo ./svc.sh start
 sudo ./svc.sh status
 ```
 
-## 8. Cargar secrets en GitHub
+## 9. Cargar secrets en GitHub
 
 En **repo → Settings → Secrets and variables → Actions**:
 
@@ -117,7 +133,7 @@ En **repo → Settings → Secrets and variables → Actions**:
 | `SQL_DATABASE` | `inventario_itu` |
 | `SQL_ENCRYPT` | `false` |
 
-## 9. Primer deploy
+## 10. Primer deploy
 
 ```bash
 # Desde el repo en la VM — deploy manual inicial
