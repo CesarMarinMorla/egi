@@ -107,6 +107,9 @@ jobs:
           kubectl rollout status deployment/inventario-backend -n "${{ env.NAMESPACE }}" --timeout=180s
           kubectl rollout status deployment/inventario-web -n "${{ env.NAMESPACE }}" --timeout=180s
 
+      - name: Configurar reglas iptables (host)
+        run: sudo bash k8s/setup-host-networking.sh
+
       - name: Smoke test
         run: |
           sleep 5

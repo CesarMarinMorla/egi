@@ -102,7 +102,27 @@ sudo apt-get install -y nodejs
 minikube start --cni=calico --memory=3072 --cpus=2
 ```
 
-### 3. Configurar secret con modo real
+### 3. Configurar red del host (iptables)
+
+Minikube con driver `docker` expone los NodePorts en una red aislada. Se requiere una regla DNAT en el host para que el frontend sea accesible desde la LAN.
+
+```bash
+# Ejecutar una sola vez
+sudo bash k8s/setup-host-networking.sh
+
+# Hacer las reglas persistentes (sobreviven reinicios)
+sudo apt install -y iptables-persistent
+sudo netfilter-persistent save
+```
+
+Verificar que el puerto quede accesible:
+
+```bash
+curl http://192.168.1.50:30080
+# → frontend React
+```
+
+### 4. Configurar secret con modo real
 
 Editar `k8s/backend/secret.yaml` — descomentar y completar:
 
@@ -123,7 +143,7 @@ LDAP_BIND_DN: "<bind-dn>"
 LDAP_BIND_PASSWORD: "<bind-password>"
 ```
 
-### 4. Bootstrap SQL Server (primera vez)
+### 5. Bootstrap SQL Server (primera vez)
 
 ```bash
 cd backend
@@ -131,13 +151,13 @@ npm ci
 SQL_SERVER=192.168.1.102 SQL_USER=sa SQL_PASSWORD=<pass> node scripts/bootstrap.mjs
 ```
 
-### 5. Desplegar
+### 6. Desplegar
 
 ```bash
 bash k8s/deploy-local.sh
 ```
 
-### 6. Verificar
+### 7. Verificar
 
 ```bash
 kubectl get pods -n inventario-itu
@@ -201,7 +221,7 @@ git push main
     │
     └── deploy.yml (runner self-hosted en VM Linux)
         bootstrap SQL → build imágenes → push GHCR
-        → kubectl apply → rollout → smoke test
+        → kubectl apply → rollout → iptables (safety net) → smoke test
 ```
 
 ## Detener

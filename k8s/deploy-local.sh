@@ -30,34 +30,4 @@ kubectl rollout status deployment/inventario-backend -n inventario-itu --timeout
 kubectl rollout status deployment/inventario-web -n inventario-itu --timeout=120s
 
 echo ""
-echo "==> Exponer frontend en la red local"
-MINIKUBE_IP=$(minikube ip)
-HOST_LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "")
-
-IPTABLES=""
-if command -v iptables &>/dev/null && [ -n "$HOST_LAN_IP" ]; then
-  if [ "$(id -u)" -eq 0 ]; then
-    IPTABLES="iptables"
-  elif command -v sudo &>/dev/null; then
-    IPTABLES="sudo iptables"
-  fi
-fi
-
-if [ -n "$IPTABLES" ]; then
-  $IPTABLES -t nat -C PREROUTING -p tcp --dport 30080 \
-    -j DNAT --to-destination "${MINIKUBE_IP}:30080" 2>/dev/null ||
-  $IPTABLES -t nat -A PREROUTING -p tcp --dport 30080 \
-    -j DNAT --to-destination "${MINIKUBE_IP}:30080" 2>/dev/null || true
-  $IPTABLES -C FORWARD -p tcp -d "$MINIKUBE_IP" --dport 30080 -j ACCEPT 2>/dev/null ||
-  $IPTABLES -A FORWARD -p tcp -d "$MINIKUBE_IP" --dport 30080 -j ACCEPT 2>/dev/null || true
-  echo "  DNAT activado: ${HOST_LAN_IP}:30080 → ${MINIKUBE_IP}:30080"
-else
-  echo "  Solo local (sin iptables): http://${MINIKUBE_IP}:30080"
-fi
-
-echo ""
-echo "Frontend:"
-echo "  http://${HOST_LAN_IP:-$(minikube ip)}:30080"
-echo ""
-echo "Detener (eliminar reglas iptables):"
-echo "  iptables -t nat -D PREROUTING -p tcp --dport 30080 -j DNAT --to-destination ${MINIKUBE_IP}:30080"
+bash "$ROOT/k8s/setup-host-networking.sh"
