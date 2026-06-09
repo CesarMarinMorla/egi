@@ -46,10 +46,6 @@ kubectl get pods -n inventario-itu
 # inventario-db-65798c85c5-7qbxb        1/1     Running   0          88s
 # inventario-web-57f79d7756-4rbph       1/1     Running   0          87s
 
-# Obtener URL del frontend
-minikube service inventario-web -n inventario-itu --url
-# → http://192.168.49.2:30080
-
 kubectl get svc -n inventario-itu
 # NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)
 # inventario-backend   ClusterIP   10.99.224.254   <none>        3001/TCP
@@ -66,6 +62,30 @@ kubectl get svc -n inventario-itu
 | Usuarios / Auth | Mock (en memoria)       | Mock                                |
 
 En el cluster, `MOCK_MODE=true` en el Secret, así que todo usa arreglos en memoria. Para activar modo real, editar `k8s/backend/secret.yaml`: descomentar `MOCK_MODE: "false"`, `MONGO_URI` y `MONGO_DB_NAME`, y apuntar SQL Server a una instancia accesible.
+
+## Acceso desde la red local
+
+Minikube con driver `docker` aísla el cluster en una red interna (`192.168.49.0/24`). El NodePort `30080` solo es accesible desde la máquina que ejecuta Minikube.
+
+El script `deploy-local.sh` configura automáticamente una regla `iptables DNAT` en Linux para redirigir el tráfico desde la IP local de la máquina hacia el cluster:
+
+```
+Host (Linux):30080  ──DNAT──>  Minikube:30080  ──NodePort──>  Pod nginx:80
+```
+
+Esto simula el NAT que haría pfSense en producción.
+
+| Plataforma | Acceso al frontend                     |
+| ---------- | -------------------------------------- |
+| Linux      | `http://<ip-del-server>:30080`         |
+| macOS      | `kubectl port-forward -n inventario-itu svc/inventario-web 8080:80` |
+
+Para eliminar las reglas iptables manualmente:
+
+```bash
+iptables -t nat -D PREROUTING -p tcp --dport 30080 \
+  -j DNAT --to-destination $(minikube ip):30080
+```
 
 ## Notas
 
