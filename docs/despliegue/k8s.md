@@ -70,14 +70,14 @@ Minikube con driver `docker` aísla el cluster en una red interna (`192.168.49.0
 El script `deploy-local.sh` configura automáticamente una regla `iptables DNAT` en Linux para redirigir el tráfico desde la IP local de la máquina hacia el cluster:
 
 ```
-Host (Linux):30080  ──DNAT──>  Minikube:30080  ──NodePort──>  Pod nginx:80
+192.168.1.50:30080  ──DNAT──>  192.168.49.2:30080  ──NodePort──>  Pod nginx:80
 ```
 
 Esto simula el NAT que haría pfSense en producción.
 
 | Plataforma | Acceso al frontend                     |
 | ---------- | -------------------------------------- |
-| Linux      | `http://<ip-del-server>:30080`         |
+| Linux      | `http://192.168.1.50:30080`             |
 | macOS      | `kubectl port-forward -n inventario-itu svc/inventario-web 8080:80` |
 
 Para eliminar las reglas iptables manualmente:
