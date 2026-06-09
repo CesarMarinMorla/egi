@@ -40,6 +40,7 @@ jobs:
         working-directory: backend
 
       - name: Run database schema
+        if: ${{ secrets.SQL_SERVER != '' }}
         run: node scripts/bootstrap.mjs
         working-directory: backend
         env:
