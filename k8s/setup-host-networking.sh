@@ -12,8 +12,16 @@ HOST_LAN_IP=""
 IPTABLES_CMD=""
 NODE_PORT=30080
 
+# Cuando se ejecuta con sudo, minikube no encuentra el perfil del usuario.
+# Detectamos el usuario original para ejecutar comandos de minikube con él.
+if [ "$(id -u)" -eq 0 ] && [ -n "${SUDO_USER:-}" ]; then
+  MINIKUBE_CMD="sudo -u \"$SUDO_USER\" minikube"
+else
+  MINIKUBE_CMD="minikube"
+fi
+
 resolve_ips() {
-  if ! MINIKUBE_IP=$(minikube ip 2>/dev/null); then
+  if ! MINIKUBE_IP=$(bash -c "$MINIKUBE_CMD ip" 2>/dev/null); then
     echo "Error: minikube no está corriendo o no instalado"
     exit 1
   fi
@@ -37,7 +45,7 @@ detect_iptables() {
 
 check_driver() {
   local driver
-  driver=$(minikube config get driver 2>/dev/null || echo "docker")
+  driver=$(bash -c "$MINIKUBE_CMD config get driver" 2>/dev/null || echo "docker")
   if [ "$driver" = "docker" ]; then
     echo "  Driver: docker — se requieren reglas DNAT"
   else

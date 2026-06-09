@@ -2,13 +2,13 @@
 
 ## 1. Crear la VM en VirtualBox
 
-| Campo | Valor |
-|---|---|
-| OS | Ubuntu Server 24.04 LTS (64-bit) |
-| RAM | 3072 MB |
-| CPUs | 2 |
-| Disco | 20 GB |
-| Red | Adaptador interno (misma red que pfSense LAN) |
+| Campo | Valor                                         |
+| ----- | --------------------------------------------- |
+| OS    | Ubuntu Server 24.04 LTS (64-bit)              |
+| RAM   | 3072 MB                                       |
+| CPUs  | 2                                             |
+| Disco | 20 GB                                         |
+| Red   | Adaptador interno (misma red que pfSense LAN) |
 
 ## 2. Asignar IP fija
 
@@ -124,14 +124,14 @@ sudo ./svc.sh status
 
 En **repo → Settings → Secrets and variables → Actions**:
 
-| Secret | Valor |
-|---|---|
-| `SQL_SERVER` | `192.168.1.102` |
-| `SQL_PORT` | `1433` |
-| `SQL_USER` | `sa` |
-| `SQL_PASSWORD` | `Mysql123` |
+| Secret         | Valor            |
+| -------------- | ---------------- |
+| `SQL_SERVER`   | `192.168.1.102`  |
+| `SQL_PORT`     | `1433`           |
+| `SQL_USER`     | `sa`             |
+| `SQL_PASSWORD` | `Mysql123`       |
 | `SQL_DATABASE` | `inventario_itu` |
-| `SQL_ENCRYPT` | `false` |
+| `SQL_ENCRYPT`  | `false`          |
 
 ## 10. Primer deploy
 
