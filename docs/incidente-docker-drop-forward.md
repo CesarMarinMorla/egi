@@ -121,14 +121,14 @@ ensure_rule filter FORWARD     "-p tcp -d $MINIKUBE_IP --dport $NODE_PORT -j ACC
 ensure_rule filter DOCKER-USER "-o $DOCKER_BRIDGE -p tcp --dport $NODE_PORT -j ACCEPT"
 ```
 
-Adicionalmente, se reemplazó la detección hardcodeada del bridge de Docker por detección dinámica:
+La regla en `DOCKER-USER` requiere la interfaz bridge de Docker, la cual se detecta dinámicamente porque su nombre (`br-<random>`) cambia en cada máquina:
 
 ```bash
-# Antes: asumía "br-30e7da67ea92"
-# Después: extrae la interfaz de la tabla de rutas
 subnet=$(echo "$MINIKUBE_IP" | awk -F. '{print $1"."$2"."$3".0"}')
 DOCKER_BRIDGE=$(ip route | grep "$subnet" | awk '{print $3}' | head -1)
 ```
+
+No existía una versión previa con el bridge hardcodeado — el script original directamente no tenía la regla `DOCKER-USER`.
 
 ### Comandos equivalentes manuales
 
