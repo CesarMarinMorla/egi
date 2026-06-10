@@ -69,6 +69,29 @@ sudo apt install -y iptables-persistent
 sudo netfilter-persistent save
 ```
 
+## Pruebas de conectividad — resultados
+
+### Red interna (192.168.1.0/24)
+
+| Origen | Destino | Ping | Puerto | Resultado |
+|---|---|---|---|---|
+| Ubuntu Server (`1.50`) | pfSense LAN (`1.254`) | ✅ | — | OK |
+| Ubuntu Server (`1.50`) | Internet (`8.8.8.8`) | ✅ | — | OK |
+| Ubuntu Server (`1.50`) | AD (`1.10`) | ✅ | 389 (LDAP) | ✅ |
+| Ubuntu Server (`1.50`) | AD (`1.10`) | ✅ | 636 (LDAPS) | ✅ |
+| Ubuntu Server (`1.50`) | SQL (`1.102`) | ❌ | 1433 | ❌ Pendiente |
+| AD (`1.10`) | Ubuntu Server (`1.50:30080`) | — | HTTP | ✅ Frontend accesible |
+| Lubuntu | Ubuntu Server (`1.50:30080`) | — | HTTP | ✅ Frontend accesible |
+| Host Windows | Ubuntu Server (`1.50:30080`) | — | HTTP | ❌ Pendiente (requiere pfSense) |
+
+## Pendientes
+
+- [ ] **Acceso desde host Windows:** configurar port forward en pfSense (`WAN:443 → 1.50:30080`) o SSH tunnel
+- [ ] **SQL Server (`1.102`):** verificar VM encendida y firewall de Windows
+- [ ] **Merge develop → main:** para activar CI/CD con el runner self-hosted
+- [ ] **Configurar secrets de GitHub:** `SQL_SERVER`, `SQL_PASSWORD`, etc.
+- [ ] **Despliegue automático:** confirmar que el runner de GitHub Actions está instalado
+
 ## Estado del repositorio
 
 - `develop`: contiene todos los cambios mergeados

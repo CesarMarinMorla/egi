@@ -87,8 +87,12 @@ sudo bash k8s/setup-host-networking.sh --status
 
 ## 8. Prueba desde otra máquina en la LAN
 
-Desde un celular, laptop u otra VM:
-
 ```bash
 curl -v http://192.168.1.50:30080
 ```
+
+| Origen | Acceso al frontend | Fecha |
+|---|---|---|
+| AD (`192.168.1.10`) | ✅ | 10/06/2026 |
+| Lubuntu (`192.168.1.x`) | ✅ | 10/06/2026 |
+| Host Windows | ❌ Pendiente (pfSense) | — |
