@@ -1,8 +1,29 @@
-# Avances — Sesión 10/06/2026
+# Avances
 
-## Resumen
+## Sesión 2 — 10/06/2026 (persistencia post-reinicio)
 
-Se identificaron y resolvieron dos problemas de red que impedían el acceso al frontend del proyecto desde máquinas externas al host. Se creó un script autónomo de iptables y se documentó el incidente.
+### Resumen
+
+Se aseguró que toda la configuración de la VM Linux sobreviva a un reinicio: iptables, Minikube, red estática y DNS.
+
+### Cambios realizados
+
+- Creado `iptables-restore.service`: guarda reglas en `/etc/iptables/rules.v4` y las restaura al arrancar
+- Creado `minikube.service`: inicia el clúster automáticamente tras Docker e iptables (con `Environment=HOME=/home/cesar`)
+- Verificado que `lan-internal` (NetworkManager) tiene `autoconnect: sí` con IP estática y DNS 8.8.8.8
+- Docker ya estaba con `systemctl enable docker`
+
+### Archivos modificados
+
+| Archivo | Cambio |
+|---|---|
+| `docs/pfsense-nat-frontend.md` | Sección "Servicios systemd configurados" agregada; nota de persistencia en iptables |
+| `k8s/setup-host-networking.sh` | Comentario actualizado indicando persistencia via systemd |
+| `docs/pendientes/vm-linux.md` | Pasos 7 y 11 actualizados con los servicios systemd |
+
+---
+
+## Sesión 1 — 10/06/2026 (red y acceso al frontend)
 
 ## Problemas resueltos
 

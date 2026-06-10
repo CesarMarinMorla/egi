@@ -99,13 +99,14 @@ Minikube con driver `docker` aísla los NodePorts en una red interna. Se requier
 # Ejecutar una sola vez
 sudo bash k8s/setup-host-networking.sh
 
-# Hacer persistente (sobrevive reinicios)
-sudo apt install -y iptables-persistent
-sudo netfilter-persistent save
+# Guardar reglas para persistencia
+sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
 
 # Verificar
 curl http://192.168.1.50:30080
 ```
+
+Las reglas se restauran automáticamente al arrancar mediante `iptables-restore.service` (systemd).
 
 ## 8. Instalar el GitHub Actions Runner
 
@@ -147,3 +148,17 @@ curl http://localhost:30080
 ```
 
 Luego hacer un push a `main` para verificar que el pipeline de GitHub Actions corre completo.
+
+## 11. Persistencia post-reinicio
+
+Servicios systemd configurados para que todo arranque automáticamente:
+
+| Servicio | Rol | Depende de |
+|---|---|---|
+| `iptables-restore.service` | Restaura reglas iptables desde `/etc/iptables/rules.v4` | — |
+| `minikube.service` | Inicia `minikube start --cni=calico` | Docker + iptables-restore |
+
+Verificar:
+```bash
+sudo systemctl status iptables-restore minikube docker
+```

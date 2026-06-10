@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Configura reglas iptables para exponer el NodePort de Minikube en la LAN.
+# Las reglas se persisten automáticamente via systemd (iptables-restore.service).
 # Uso:
 #   bash k8s/setup-host-networking.sh            # agregar reglas
 #   bash k8s/setup-host-networking.sh --remove   # eliminar reglas

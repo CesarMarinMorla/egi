@@ -36,6 +36,8 @@ Se genera automáticamente al guardar la NAT. Se puede verificar en **Firewall �
 
 El host tiene reglas DNAT para redirigir el tráfico de la LAN al NodePort de Minikube. Se gestionan con el script `k8s/setup-host-networking.sh`.
 
+> **Persistencia:** Las reglas se guardan en `/etc/iptables/rules.v4` y se restauran automáticamente al arrancar mediante `iptables-restore.service` (systemd). No es necesario ejecutar el script manualmente tras un reinicio.
+
 | Cadena | Tabla | Regla |
 |---|---|---|
 | PREROUTING | nat | `DNAT --dport 80 → 192.168.49.2:30080` |
@@ -78,6 +80,14 @@ Minikube NodePort (192.168.49.2:30080)
     ▼
 Pod inventario-web (nginx :80)
 ```
+
+## Servicios systemd configurados
+
+| Servicio | Descripción | Estado |
+|---|---|---|
+| `iptables-restore.service` | Restaura reglas iptables desde `/etc/iptables/rules.v4` al iniciar | `enabled` |
+| `minikube.service` | Inicia el clúster Minikube después de Docker e iptables | `enabled` |
+| `docker.service` | Motor de contenedores (viene por defecto) | `enabled` |
 
 ## Solución de problemas
 
