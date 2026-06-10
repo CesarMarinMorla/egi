@@ -19,7 +19,7 @@ El ping y SSH a la IP del host funcionaban. TCP al puerto 30080 fallaba exclusiv
 
 ## Trazado de red y detección
 
-### 1. Conectividad básica verificada
+### 1. Conectividad básica
 
 Desde la VM se confirmó conectividad completa contra el host:
 
@@ -29,6 +29,8 @@ nc -zv 192.168.122.1 22     # SSH conecta
 curl http://8.8.8.8         # Internet funciona
 nslookup google.com         # DNS resuelve
 ```
+
+Conectividad base OK. El problema era específico del puerto 30080.
 
 ### 2. Flujo de paquetes esperado
 
@@ -40,20 +42,17 @@ VM (192.168.122.151) → 192.168.122.1:30080
   → br-30e7da67ea92 → Minikube (192.168.49.2)
 ```
 
-### 3. Reglas iptables verificadas
+### 3. Reglas iptables
 
-Se inspeccionaron las cadenas PREROUTING, FORWARD y DOCKER en el filter table:
+Se verificaron las reglas DNAT y FORWARD existentes:
 
 ```bash
-# Reglas DNAT activas (PREROUTING y OUTPUT)
 sudo iptables -t nat -L PREROUTING -n -v | grep 30080
 sudo iptables -t nat -L OUTPUT -n -v | grep 30080
-
-# Regla FORWARD
 sudo iptables -L FORWARD -n -v | grep 30080
 ```
 
-Las tres reglas existían pero el contador de la regla FORWARD era **0 paquetes**, indicando que el paquete nunca la alcanzaba.
+Las reglas existían pero el contador de FORWARD era **0 paquetes** — el tráfico nunca la alcanzaba.
 
 ### 4. Inspección de la cadena DOCKER en nftables
 
@@ -90,7 +89,7 @@ Docker, cuando se ejecuta con el backend `iptables-nft`, inserta una cadena `DOC
 iifname != "br-30e7da67ea92" oifname "br-30e7da67ea92" drop
 ```
 
-**Interpretación:** todo paquete que **no** entre por la interfaz `br-30e7da67ea92` (el bridge de Docker para Minikube) pero que esté destinado a salir por ella, es descartado. Esto incluye tráfico proveniente de:
+**Interpretación:** todo paquete que **no** entre por la interfaz del bridge de Docker para Minikube pero que esté destinado a salir por ella, es descartado. Esto incluye tráfico proveniente de:
 
 - VMs de libvirt (interfaz `virbr0`)
 - VMs de VirtualBox (interfaz `vboxnet`)
@@ -109,26 +108,18 @@ Insertar una regla de aceptación en `DOCKER-USER` para el puerto 30080 resuelve
 
 ### Cambio aplicado
 
-En el script `k8s/setup-host-networking.sh`:
+Se agregó una cuarta regla en el script `k8s/setup-host-networking.sh`, que hasta entonces gestionaba solo las reglas DNAT y FORWARD:
 
 ```bash
-# Antes: solo reglas DNAT + FORWARD
-ensure_rule nat PREROUTING     "-p tcp --dport $NODE_PORT -j DNAT --to-destination ${MINIKUBE_IP}:${NODE_PORT}"
-ensure_rule nat OUTPUT         "-p tcp --dport $NODE_PORT -j DNAT --to-destination ${MINIKUBE_IP}:${NODE_PORT}"
-ensure_rule filter FORWARD     "-p tcp -d $MINIKUBE_IP --dport $NODE_PORT -j ACCEPT"
-
-# Después: se agregó una cuarta regla en DOCKER-USER
 ensure_rule filter DOCKER-USER "-o $DOCKER_BRIDGE -p tcp --dport $NODE_PORT -j ACCEPT"
 ```
 
-La regla en `DOCKER-USER` requiere la interfaz bridge de Docker, la cual se detecta dinámicamente porque su nombre (`br-<random>`) cambia en cada máquina:
+La interfaz bridge se detecta dinámicamente, ya que su nombre (`br-<random>`) cambia en cada máquina:
 
 ```bash
 subnet=$(echo "$MINIKUBE_IP" | awk -F. '{print $1"."$2"."$3".0"}')
 DOCKER_BRIDGE=$(ip route | grep "$subnet" | awk '{print $3}' | head -1)
 ```
-
-No existía una versión previa con el bridge hardcodeado — el script original directamente no tenía la regla `DOCKER-USER`.
 
 ### Comandos equivalentes manuales
 
@@ -147,7 +138,7 @@ sudo iptables -D DOCKER-USER -o br-30e7da67ea92 -p tcp --dport 30080 -j ACCEPT
 | PREROUTING | nat | `dpt:30080 → DNAT 192.168.49.2:30080` | ✓ |
 | OUTPUT | nat | `dpt:30080 → DNAT 192.168.49.2:30080` | ✓ |
 | FORWARD | filter | `daddr 192.168.49.2 dpt:30080 ACCEPT` | ✓ |
-| **DOCKER-USER** | **filter** | **`oif br-30e7da67ea92 dpt:30080 ACCEPT`** | **✓ nueva** |
+| **DOCKER-USER** | **filter** | **`oif br-30e7da67ea92 dpt:30080 ACCEPT`** | **✓ agregada** |
 
 ## Lecciones aprendidas
 
