@@ -78,7 +78,9 @@ Esto simula el NAT que haría pfSense en producción.
 | Plataforma | Acceso al frontend                     |
 | ---------- | -------------------------------------- |
 | Linux      | `http://192.168.1.50:30080`             |
-| macOS      | `kubectl port-forward -n inventario-itu svc/inventario-web 8080:80` |
+| macOS      | `kubectl port-forward -n inventario-itu svc/inventario-web 8080:80 --address=0.0.0.0` |
+
+> Sin `--address=0.0.0.0` el port-forward solo escucha en `127.0.0.1` y no es accesible desde otras máquinas de la red. Alternativa: `minikube tunnel &`
 
 Para eliminar las reglas iptables manualmente:
 
