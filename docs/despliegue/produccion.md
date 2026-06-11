@@ -13,7 +13,7 @@ flowchart TB
 
     subgraph FW["pfSense Firewall (WAN: IP del WiFi)"]
         direction TB
-        TLS["Port forward :443 → VM Linux :30080"]
+        TLS["Port forward :80 → VM Linux :80"]
         NAT["NAT / ACL — solo red interna"]
         WAF["WAF / rate limiting"]
     end
@@ -35,7 +35,7 @@ flowchart TB
         AD[("VM Windows Server\nActive Directory\n192.168.1.10:389")]
     end
 
-    User -->|":443 HTTPS"| TLS
+    User -->|":80 HTTP"| TLS
     GH -->|"push a main → job"| Runner
     TLS -->|":30080"| WebSvc
     WebSvc --> BeSvc
