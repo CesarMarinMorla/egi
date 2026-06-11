@@ -79,42 +79,7 @@ Estos requieren infraestructura y configuración adicionales. No aplican hoy por
 
 ---
 
-## 3. Resumen por prioridad
-
-### Inmediato (antes de productive)
-
-```
-1.  JWT secret fuerte y por variable de entorno
-2.  Rate limiting en /api/auth/login
-3.  helmet middleware
-4.  CORS restringido
-5.  Validación server-side (Zod)
-6.  RBAC faltante en PUT /hardware/:machineId
-```
-
-### Antes de conectar AD real
-
-```
-7.  Escapar inputs LDAP (inyección)
-8.  LDAPS en vez de LDAP
-9.  Validar bind credentials en startup
-10. SealedSecrets para K8s
-```
-
-### Con pfSense en producción
-
-```
-11. HTTPS (TLS termination en pfSense o nginx)
-12. SQL_ENCRYPT=true
-13. MongoDB auth + TLS
-14. CSRF protection
-15. Logging de eventos de seguridad
-16. No exponer puertos de bases de datos al host
-```
-
----
-
-## 4. Lo que ya está bien
+## 3. Lo que ya está bien
 
 - **SQL injection**: no aplica — todas las queries usan parámetros (`sql.input()`)
 - **Network policies**: default-deny + reglas explícitas para cada flujo
