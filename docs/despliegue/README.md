@@ -10,6 +10,8 @@
 | [pruebas-conexion.md](pruebas-conexion.md) | Tests de conectividad desde la VM Linux |
 | [scripts/sql-server.md](scripts/sql-server.md) | Configuración de SQL Server VM |
 | [scripts/active-directory.md](scripts/active-directory.md) | Configuración de AD VM |
+| [scripts/stub-sqlserver-vm.ps1](scripts/stub-sqlserver-vm.ps1) | Stub PowerShell para SQL Server |
+| [scripts/stub-ad-vm.ps1](scripts/stub-ad-vm.ps1) | Stub PowerShell para Active Directory |
 
 ## Testing local
 
