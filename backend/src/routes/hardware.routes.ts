@@ -15,7 +15,11 @@ export function createHardwareRouter(hardwareService: HardwareService): Router {
     requirePermission('read', 'inventory'),
     (req, res) => ctrl.getByMachineId(req, res),
   )
-  router.put('/:machineId', (req, res) => ctrl.save(req, res))
+  router.put(
+    '/:machineId',
+    requirePermission('update', 'inventory'),
+    (req, res) => ctrl.save(req, res),
+  )
   router.delete(
     '/:machineId',
     requirePermission('delete', 'inventory'),

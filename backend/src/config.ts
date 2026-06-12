@@ -5,6 +5,8 @@ dotenv.config();
 interface Config {
 	port: number;
 	jwtSecret: string;
+	jwtAudience: string;
+	jwtIssuer: string;
 	mockMode: boolean;
 	corsOrigins: string | string[];
 	sql: {
@@ -51,6 +53,8 @@ function corsOrigins(): string | string[] {
 const config: Config = {
 	port: Number(process.env.PORT) || 3001,
 	jwtSecret: requireEnv("JWT_SECRET"),
+	jwtAudience: process.env.JWT_AUDIENCE || "inventario-itu",
+	jwtIssuer: process.env.JWT_ISSUER || "inventario-backend",
 	mockMode: process.env.MOCK_MODE !== "false",
 	corsOrigins: corsOrigins(),
 	sql: sqlConfig(),
