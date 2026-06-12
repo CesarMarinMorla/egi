@@ -6,6 +6,7 @@ interface Config {
 	port: number;
 	jwtSecret: string;
 	mockMode: boolean;
+	corsOrigins: string | string[];
 	sql: {
 		server: string;
 		port: number;
@@ -35,10 +36,23 @@ function sqlConfig() {
 	};
 }
 
+function requireEnv(key: string): string {
+	const val = process.env[key];
+	if (!val) throw new Error(`Variable de entorno requerida: ${key}`);
+	return val;
+}
+
+function corsOrigins(): string | string[] {
+	const raw = process.env.CORS_ORIGINS;
+	if (!raw) return ["http://localhost:5173", "http://localhost:30080"];
+	return raw.split(",").map(s => s.trim());
+}
+
 const config: Config = {
 	port: Number(process.env.PORT) || 3001,
-	jwtSecret: process.env.JWT_SECRET || "dev-secret-change-me",
+	jwtSecret: requireEnv("JWT_SECRET"),
 	mockMode: process.env.MOCK_MODE !== "false",
+	corsOrigins: corsOrigins(),
 	sql: sqlConfig(),
 };
 
