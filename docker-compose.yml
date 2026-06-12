@@ -5,9 +5,9 @@ services:
     restart: unless-stopped
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "${SQL_PASSWORD:-Mysql123}"
+      SA_PASSWORD: "${SQL_PASSWORD}"
     ports:
-      - "1433:1433"
+      - "127.0.0.1:1433:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
     healthcheck:
@@ -24,7 +24,7 @@ services:
     environment:
       MONGO_INITDB_DATABASE: "${MONGO_DB_NAME:-inventario}"
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongodb-data:/data/db
     healthcheck:
