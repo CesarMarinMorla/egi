@@ -12,7 +12,11 @@ export async function createMongoClient(): Promise<IMongoClient> {
 	const dbName = process.env.MONGO_DB_NAME || "inventario";
 
 	const client = new MongoClient(mongoUri);
-	await client.connect();
+	try {
+		await client.connect();
+	} catch (error) {
+		throw new Error(`MongoDB connection failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+	}
 
 	const db: Db = client.db(dbName);
 	const collection = db.collection<Hardware>("hardware");

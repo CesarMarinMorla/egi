@@ -33,8 +33,8 @@ function sqlConfig() {
 		user: s("SQL_USER", "sa"),
 		password: s("SQL_PASSWORD", ""),
 		database: s("SQL_DATABASE", "inventario_itu"),
-		encrypt: b("SQL_ENCRYPT", "false"),
-		trustServerCertificate: b("SQL_TRUST_SERVER_CERTIFICATE", "true"),
+		encrypt: b("SQL_ENCRYPT", "true"),
+		trustServerCertificate: b("SQL_TRUST_SERVER_CERTIFICATE", "false"),
 	};
 }
 

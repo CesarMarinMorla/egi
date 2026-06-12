@@ -10,6 +10,28 @@ export interface ILdapClient {
 	deleteUser(id: string): Promise<boolean>;
 }
 
+function escapeLdapFilter(input: string): string {
+	return input
+		.replace(/\\/g, "\\5c")
+		.replace(/\*/g, "\\2a")
+		.replace(/\(/g, "\\28")
+		.replace(/\)/g, "\\29")
+		.replace(/\0/g, "\\00");
+}
+
+function escapeLdapDn(input: string): string {
+	return input
+		.replace(/\\/g, "\\\\")
+		.replace(/,/g, "\\,")
+		.replace(/\+/g, "\\+")
+		.replace(/"/g, '\\"')
+		.replace(/</g, "\\<")
+		.replace(/>/g, "\\>")
+		.replace(/;/g, "\\;")
+		.replace(/=/g, "\\=")
+		.replace(/#/g, "\\#");
+}
+
 function mapAdGroupToRole(groups: string[]): UserRole {
 	const groupMap: Record<string, UserRole> = {
 		GRP_Sysadmin: "sysadmin",
@@ -29,11 +51,16 @@ function mapAdGroupToRole(groups: string[]): UserRole {
 }
 
 export async function createLdapClient(): Promise<ILdapClient> {
-	const ldapUrl = process.env.LDAP_URL || "ldap://localhost:389";
+	const mockMode = process.env.MOCK_MODE !== "false";
+	const ldapUrl = process.env.LDAP_URL || "ldaps://localhost:636";
 	const bindDn = process.env.LDAP_BIND_DN || "";
 	const bindPassword = process.env.LDAP_BIND_PASSWORD || "";
 	const searchBase = process.env.LDAP_SEARCH_BASE || "dc=itu,dc=local";
 	const searchFilter = process.env.LDAP_SEARCH_FILTER || "(sAMAccountName={username})";
+
+	if (!mockMode && (!bindDn || !bindPassword)) {
+		throw new Error("LDAP_BIND_DN and LDAP_BIND_PASSWORD must be set when MOCK_MODE=false");
+	}
 
 	const client = new Client({
 		url: ldapUrl,
@@ -50,7 +77,7 @@ export async function createLdapClient(): Promise<ILdapClient> {
 				// Search for the user
 				const { searchEntries } = await client.search(searchBase, {
 					scope: "sub",
-					filter: searchFilter.replace("{username}", username),
+					filter: searchFilter.replace("{username}", escapeLdapFilter(username)),
 					attributes: ["dn", "cn", "sAMAccountName", "memberOf", "userPrincipalName"],
 				});
 
@@ -144,7 +171,7 @@ export async function createLdapClient(): Promise<ILdapClient> {
 
 				const { searchEntries } = await client.search(searchBase, {
 					scope: "sub",
-					filter: `(distinguishedName=${id})`,
+					filter: `(distinguishedName=${escapeLdapFilter(id)})`,
 					attributes: ["dn", "cn", "sAMAccountName", "mail", "memberOf", "userAccountControl"],
 				});
 
