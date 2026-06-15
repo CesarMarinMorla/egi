@@ -1,53 +1,75 @@
 # Seguimiento de tareas
 
-## 1. Red e infraestructura
+## 1. 🟢 Listo — Infraestructura base
 
 - [x] pfSense: regla NAT (puerto 80 → `192.168.1.50:30080`)
 - [x] VM Linux con Minikube, Docker, Calico, iptables persistence
-- [ ] pfSense: verificar NAT reflection para acceso desde host Windows
-- [ ] Conectividad SQL Server (`192.168.1.102:1433`) — ping y puerto fallan
-
-## 2. Minikube / Kubernetes
-
-- [x] NodePort 30080 expuesto desde el host
+- [x] NodePort 30080 expuesto y accesible desde la LAN
 - [x] Reglas iptables host: DNAT, FORWARD, DOCKER-USER (script `k8s/setup-host-networking.sh`)
 - [x] Persistencia de reglas iptables post-reboot (systemd)
 - [x] Smoke test CI/CD post-deploy en `.github/workflows/deploy.yml`
-- [ ] Configurar GitHub Secrets (SQL_SERVER, SQL_PASSWORD, etc.) para modo no-mock
-- [ ] Merge `develop` → `main` para activar pipeline en self-hosted runner
+- [x] GitHub Secrets configurados en UI de GitHub
+- [x] Deploy manual en Minikube (build + kubectl apply, modo mock)
+- [x] Frontend accesible desde AD (`192.168.1.10`) y Lubuntu (`192.168.1.x`)
+- [x] Conectividad AD verificada — ping, puertos 389 y 636 funcionan
 
-## 3. Documentación
+## 2. 🟡 Listo — Seguridad aplicada (commits en `develop`)
 
-- [x] docs/ reestructurada (arquitectura/, despliegue/, incidentes/, testing/ separados)
-- [x] TASKS.md unificado (este archivo)
-- [ ] Documentar configuración de Mongo en producción (persistencia, backups)
+Estos cambios están commiteados en `develop` y ya pueden deployarse manualmente en el cluster:
 
-## 4. Seguridad (post-despliegue funcional)
+- [x] JWT_SECRET obligatorio por env (crashea si falta)
+- [x] CORS restringido por `CORS_ORIGINS` env var
+- [x] Helmet middleware agregado
+- [x] JWT con claims `aud` e `iss`
+- [x] RBAC faltante en `PUT /hardware/:machineId` corregido
+- [x] Logging de intentos de login fallidos
+- [x] Escape de inputs LDAP (inyección)
+- [x] Default `ldaps://` en vez de `ldap://`
+- [x] Validación de bind credentials al startup (solo si `MOCK_MODE=false`)
+- [x] `SQL_ENCRYPT` default `true`
+- [x] `sanitizeInput` aplicado en validación Zod del frontend
+- [x] Docker Compose: sin password default, puertos bindeados a `127.0.0.1`
+- [x] `.env.example` completo con todas las variables
 
-### 4.1 Inmediato (antes de productive)
+## 3. 🔴 Roadblocks — Sin esto no se termina el setup
 
-- [ ] JWT secret fuerte y por variable de entorno
-- [ ] Rate limiting en `/api/auth/login`
-- [ ] helmet middleware
-- [ ] CORS restringido
-- [ ] Validación server-side (Zod)
-- [ ] RBAC faltante en `PUT /hardware/:machineId`
+- [ ] **SQL Server** (`192.168.1.102:1433`) — ping y puerto no responden. Verificar VM Windows, firewall, y conectividad pfSense
+- [ ] **Active Directory** — conectividad OK, falta configurar bind credentials y verificar autenticación real contra la app
+- [ ] **Merge `develop` → `main`** — recién después de tener SQL + AD funcionando en modo real
 
-### 4.2 Antes de conectar AD real
+## 4. ⏳ Pendiente — No bloquea setup inicial
 
-- [ ] Escapar inputs LDAP (inyección)
-- [ ] LDAPS en vez de LDAP
-- [ ] Validar bind credentials en startup
-- [ ] SealedSecrets para K8s
+### Próximo sprint (testing)
 
-### 4.3 Con pfSense en producción
+- [ ] Setup Vitest + React Testing Library en frontend
+- [ ] Ampliar cobertura de tests backend
+- [ ] Tests de integración mock
 
+### Próximo sprint (seguridad)
+
+- [ ] Rate limiting en `/api/auth/login` (express-rate-limit, auto-desactivado en mock)
+- [ ] MongoDB auth en docker-compose (init script + credenciales)
+- [ ] Sincronizar `docs/seguridad.md` con cambios ya aplicados
+
+### Próximo sprint (calidad)
+
+- [ ] Corregir typo en healthcheck docker-compose: `sqlservr` → `sqlservr`
+- [ ] Agregar confirmación en `FORCE_RESET` de bootstrap.mjs
+- [ ] Agregar `.nvmrc` con `20` en la raíz
+
+### Investigación
+
+- [ ] SealedSecrets para K8s (spike en Minikube local)
+- [ ] Política de rate limiting para producción
+- [ ] Estándar de contraseñas para servicios
+
+## 5. 🔵 Producción (post-setup)
+
+- [ ] pfSense NAT reflection para acceso desde host Windows
 - [ ] HTTPS (TLS termination en pfSense o nginx)
-- [ ] `SQL_ENCRYPT=true`
-- [ ] MongoDB auth + TLS
-- [ ] CSRF protection
-- [ ] Logging de eventos de seguridad
-- [ ] No exponer puertos de bases de datos al host
+- [ ] MongoDB auth + TLS en el cluster
+- [ ] CSRF protection (evaluar si aplica con Bearer tokens)
+- [ ] Documentar configuración de MongoDB en producción
 
 ## Información pendiente de confirmar
 
