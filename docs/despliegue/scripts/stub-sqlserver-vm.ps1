@@ -6,7 +6,7 @@ param(
 )
 
 Write-Host "=== Stub: Configuración de VM SQL Server ===" -ForegroundColor Cyan
-Write-Host "IP destino: 192.168.1.102" -ForegroundColor Yellow
+Write-Host "IP destino: 192.168.1.20" -ForegroundColor Yellow
 Write-Host ""
 
 Write-Host "1. Habilitar autenticación mixta (SQL Server + Windows)" -ForegroundColor Green
@@ -60,9 +60,9 @@ Write-Host $dbQuery
 Write-Host ""
 
 Write-Host "6. Verificar conectividad desde VM Linux (192.168.1.50):" -ForegroundColor Yellow
-Write-Host "   nc -zv 192.168.1.102 $SqlPort"
+Write-Host "   nc -zv 192.168.1.20 $SqlPort"
 Write-Host ""
 
 Write-Host "=== Stub completado ===" -ForegroundColor Cyan
 Write-Host "Ejecutar bootstrap desde VM Linux:"
-Write-Host "cd backend && npm ci && SQL_SERVER=192.168.1.102 SQL_USER=sa SQL_PASSWORD=$SaPassword SQL_DATABASE=$DbName node scripts/bootstrap.mjs"
+Write-Host "cd backend && npm ci && SQL_SERVER=192.168.1.20 SQL_USER=sa SQL_PASSWORD=$SaPassword SQL_DATABASE=$DbName node scripts/bootstrap.mjs"
