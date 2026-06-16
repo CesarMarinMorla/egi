@@ -34,10 +34,8 @@ nc -zv 192.168.1.20 1433
 | `ping 192.168.1.10` (AD) | ✅ Funciona |
 | `nc 192.168.1.10 389` (LDAP) | ✅ Funciona |
 | `nc 192.168.1.10 636` (LDAPS) | ✅ Funciona |
-| `ping 192.168.1.20` (SQL) | ❌ No funciona |
-| `nc 192.168.1.20 1433` (SQL) | ❌ No funciona |
-
-> **Nota:** SQL Server (`192.168.1.20`) no responde a ping ni al puerto 1433 desde Ubuntu Server. Verificar si la VM de SQL Server está encendida, si el firewall de Windows permite ICMP y el puerto 1433, o si pfSense está bloqueando el tráfico entre VMs.
+| `ping 192.168.1.20` (SQL) | ✅ Funciona |
+| `nc 192.168.1.20 1433` (SQL) | ✅ Funciona |
 
 ## 3. Conectividad con pfSense
 

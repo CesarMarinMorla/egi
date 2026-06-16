@@ -33,7 +33,7 @@ Estos cambios están commiteados en `develop` y ya pueden deployarse manualmente
 
 ## 3. 🔴 Roadblocks — Sin esto no se termina el setup
 
-- [ ] **SQL Server** (`192.168.1.20:1433`) — ping y puerto no responden. Verificar VM Windows, firewall, y conectividad pfSense
+- [ ] **SQL Server** (`192.168.1.20:1433`) — ping y puerto 1433 OK. Falta crear DB y bootstrap
 - [ ] **Active Directory** — conectividad OK, falta configurar bind credentials y verificar autenticación real contra la app
 - [ ] **Merge `develop` → `main`** — recién después de tener SQL + AD funcionando en modo real
 
