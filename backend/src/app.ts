@@ -1,4 +1,5 @@
 import cors from 'cors'
+import helmet from 'helmet'
 import express from 'express'
 import config from './config.js'
 import type { IMachineRepository } from './repositories/interfaces/IMachineRepository.js'
@@ -23,7 +24,8 @@ export interface AppDependencies {
 export function createApp(deps: AppDependencies) {
   const app = express()
 
-  app.use(cors())
+  app.use(helmet())
+  app.use(cors({ origin: config.corsOrigins }))
   app.use(express.json())
 
   const authService = createAuthService(deps.authRepo)

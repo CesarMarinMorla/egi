@@ -6,7 +6,8 @@ const safeString = z
 	.string()
 	.min(1, "Este campo es requerido")
 	.max(255, "Máximo 255 caracteres")
-	.refine((val) => val.trim() === val || true, "Este campo no debe tener espacios al inicio o final");
+	.refine((val) => val.trim() === val || true, "Este campo no debe tener espacios al inicio o final")
+	.transform((val) => sanitizeInput(val));
 
 // Hardware validation
 export const hardwareInputSchema = z.object({

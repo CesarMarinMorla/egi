@@ -21,7 +21,10 @@ export function authMiddleware(
 
   try {
     const token = header.slice(7)
-    const payload = jwt.verify(token, config.jwtSecret) as AuthPayload
+    const payload = jwt.verify(token, config.jwtSecret, {
+      audience: config.jwtAudience,
+      issuer: config.jwtIssuer,
+    }) as AuthPayload
     req.user = payload.user
     next()
   } catch {
