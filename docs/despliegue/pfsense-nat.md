@@ -58,3 +58,17 @@ Minikube NodePort (192.168.49.2:30080) → Pod nginx :80
 
 - La IP WAN puede cambiar entre sesiones (DHCP del aula) — verificar en la CLI de pfSense antes de cada sesión.
 - SQL Server (`:1433`) y AD (`:389`) **no tienen port forward** — solo accesibles desde la red interna `192.168.1.0/24`.
+
+## Persistencia
+
+Las reglas iptables de la VM Linux se restauran automáticamente al arrancar mediante servicios systemd:
+
+| Servicio | Rol |
+|---|---|
+| `iptables-restore.service` | Restaura reglas desde `/etc/iptables/rules.v4` |
+| `minikube.service` | Inicia el clúster Minikube tras Docker + iptables |
+
+Verificar con:
+```bash
+sudo systemctl status iptables-restore minikube docker
+```

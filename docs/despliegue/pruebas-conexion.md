@@ -91,6 +91,18 @@ sudo bash k8s/setup-host-networking.sh --status
 curl -v http://192.168.1.50:30080
 ```
 
+## 9. Verificar servicios systemd (persistencia post-reinicio)
+
+```bash
+sudo systemctl status iptables-restore minikube docker
+```
+
+| Servicio | Estado esperado |
+|---|---|
+| `iptables-restore.service` | `enabled`, `inactive (dead)` (se ejecuta una vez al arrancar) |
+| `minikube.service` | `enabled`, `active (exited)` si ya arrancó |
+| `docker.service` | `enabled`, `active (running)` |
+
 | Origen | Acceso al frontend | Fecha |
 |---|---|---|
 | AD (`192.168.1.10`) | ✅ | 10/06/2026 |

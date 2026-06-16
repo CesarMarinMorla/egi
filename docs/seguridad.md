@@ -86,3 +86,4 @@ Estos requieren infraestructura y configuración adicionales. No aplican hoy por
 - **RBAC**: middleware de permisos presente en la mayoría de rutas
 - **Secretos en `.env`**: correctamente ignorados por git
 - **Imágenes**: no se usa `latest` de imágenes no controladas (salvo `mongo:7`)
+- **Persistencia de iptables**: las reglas de `setup-host-networking.sh` se guardan en `/etc/iptables/rules.v4` y se restauran al arrancar via `iptables-restore.service` (systemd)

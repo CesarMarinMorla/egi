@@ -79,11 +79,23 @@ Todas las VMs están en la LAN de pfSense (`192.168.1.0/24`). pfSense tiene un a
 
 ## Persistencia
 
+### Datos
+
 | Dato | Backend | Notas |
 |---|---|---|
 | Máquinas | SQL Server (`192.168.1.20`) | `MOCK_MODE=false` |
 | Hardware | MongoDB (`inventario-db` ClusterIP) | Pod dentro del cluster |
 | Usuarios / Auth | Active Directory (`192.168.1.10`) | LDAP sobre red interna |
+
+### Servicios del host
+
+Los servicios de la VM Linux arrancan automáticamente al iniciar:
+
+| Servicio | Rol | Depende de |
+|---|---|---|
+| `docker.service` | Motor de contenedores | — |
+| `iptables-restore.service` | Restaura reglas DNAT desde `/etc/iptables/rules.v4` | — |
+| `minikube.service` | Inicia el clúster Minikube con Calico | Docker + iptables-restore |
 
 ## Flujo CI/CD completo
 

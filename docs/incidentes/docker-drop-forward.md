@@ -150,6 +150,14 @@ sudo iptables -D DOCKER-USER -o br-30e7da67ea92 -p tcp --dport 30080 -j ACCEPT
 
 4. Al inspeccionar cadenas de iptables, es necesario revisar **todas** las tablas, no solo `nat`. La regla problemática estaba en la tabla `filter`, en una cadena específica de Docker (`DOCKER`).
 
+## Persistencia post-reinicio
+
+Las reglas documentadas aquí se guardan en `/etc/iptables/rules.v4` y se restauran automáticamente al arrancar via `iptables-restore.service` (systemd). El clúster Minikube también arranca automáticamente mediante `minikube.service`.
+
+```bash
+sudo systemctl status iptables-restore minikube docker
+```
+
 ## Referencias
 
 - [Docker y iptables — documentación oficial](https://docs.docker.com/network/packet-filtering-firewalls/)
