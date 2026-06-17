@@ -60,9 +60,9 @@ Write-Host $dbQuery
 Write-Host ""
 
 Write-Host "6. Verificar conectividad desde VM Linux (192.168.1.50):" -ForegroundColor Yellow
-Write-Host "   nc -zv ITUSRV002 $SqlPort"
+Write-Host "   nc -zv 192.168.1.20 $SqlPort"
 Write-Host ""
 
 Write-Host "=== Stub completado ===" -ForegroundColor Cyan
 Write-Host "Ejecutar bootstrap desde VM Linux:"
-Write-Host "cd backend && npm ci && SQL_SERVER=ITUSRV002 SQL_USER=sa SQL_PASSWORD=$SaPassword SQL_DATABASE=$DbName node scripts/bootstrap.mjs"
+Write-Host "cd backend && npm ci && SQL_SERVER=192.168.1.20 SQL_USER=sa SQL_PASSWORD=$SaPassword SQL_DATABASE=$DbName node scripts/bootstrap.mjs"
