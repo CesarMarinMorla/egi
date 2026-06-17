@@ -1,4 +1,4 @@
-# Backend → SQL Server (VM externa). Ajustar IP según la red VirtualBox.
+# Backend → SQL Server VM (ITUSRV002). Ajustar IP según la red VirtualBox.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

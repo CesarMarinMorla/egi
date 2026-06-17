@@ -24,7 +24,7 @@ ping -c 3 192.168.1.10
 nc -zv 192.168.1.10 389
 nc -zv 192.168.1.10 636
 
-# SQL Server
+# SQL Server (ITUSRV002)
 ping -c 3 192.168.1.20
 nc -zv 192.168.1.20 1433
 ```
@@ -34,8 +34,8 @@ nc -zv 192.168.1.20 1433
 | `ping 192.168.1.10` (AD) | ✅ Funciona |
 | `nc 192.168.1.10 389` (LDAP) | ✅ Funciona |
 | `nc 192.168.1.10 636` (LDAPS) | ✅ Funciona |
-| `ping 192.168.1.20` (SQL) | ✅ Funciona |
-| `nc 192.168.1.20 1433` (SQL) | ✅ Funciona |
+| `ping 192.168.1.20` (`ITUSRV002`) | ✅ Funciona |
+| `nc 192.168.1.20 1433` (`ITUSRV002`) | ✅ Funciona |
 
 ## 3. Conectividad con pfSense
 

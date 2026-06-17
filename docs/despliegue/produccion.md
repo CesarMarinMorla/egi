@@ -31,7 +31,7 @@ flowchart TB
             end
         end
 
-        SQL[("VM Windows Server\nSQL Server\n192.168.1.20:1433")]
+        SQL[("VM Windows Server\nSQL Server\nITUSRV002 (192.168.1.20:1433)")]
         AD[("VM Windows Server\nActive Directory\n192.168.1.10:389")]
     end
 
@@ -62,7 +62,7 @@ Todas las VMs están en la LAN de pfSense (`192.168.1.0/24`). pfSense tiene un a
 |---|---|---|
 | pfSense WAN | `<WAN_IP>` | Punto de entrada externo (red del aula, asignada por DHCP) |
 | pfSense LAN | `192.168.1.254` | Gateway de la red interna |
-| SQL Server | `192.168.1.20` | Base de datos relacional |
+| SQL Server | `ITUSRV002 (192.168.1.20)` | Base de datos relacional |
 | Active Directory | `192.168.1.10` | Autenticación LDAP |
 | Linux (Minikube) | `192.168.1.50` | Cluster K8s + GitHub Runner |
 
@@ -83,7 +83,7 @@ Todas las VMs están en la LAN de pfSense (`192.168.1.0/24`). pfSense tiene un a
 
 | Dato | Backend | Notas |
 |---|---|---|
-| Máquinas | SQL Server (`192.168.1.20`) | `MOCK_MODE=false` |
+| Máquinas | SQL Server (`ITUSRV002 / 192.168.1.20`) | `MOCK_MODE=false` |
 | Hardware | MongoDB (`inventario-db` ClusterIP) | Pod dentro del cluster |
 | Usuarios / Auth | Active Directory (`192.168.1.10`) | LDAP sobre red interna |
 

@@ -76,7 +76,7 @@ Editar `k8s/backend/secret.yaml` — descomentar y completar:
 ```yaml
 MOCK_MODE: "false"
 JWT_SECRET: "<output de: openssl rand -base64 32>"
-SQL_SERVER: "192.168.1.20"
+SQL_SERVER: "192.168.1.20"  # ITUSRV002
 SQL_PORT: "1433"
 SQL_USER: "sa"
 SQL_PASSWORD: "Mysql123"
@@ -127,7 +127,7 @@ En **repo → Settings → Secrets and variables → Actions**:
 
 | Secret         | Valor            |
 | -------------- | ---------------- |
-| `SQL_SERVER`   | `192.168.1.20`  |
+| `SQL_SERVER`   | `ITUSRV002 (192.168.1.20)`  |
 | `SQL_PORT`     | `1433`           |
 | `SQL_USER`     | `sa`             |
 | `SQL_PASSWORD` | `Mysql123`       |

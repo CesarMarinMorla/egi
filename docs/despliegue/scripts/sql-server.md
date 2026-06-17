@@ -1,4 +1,4 @@
-# Setup — SQL Server (192.168.1.20)
+# Setup — SQL Server (ITUSRV002 / 192.168.1.20)
 
 ## 1. Habilitar autenticación mixta
 
@@ -35,8 +35,8 @@ Windows Defender Firewall
 ## 5. Verificar conectividad desde la VM Linux
 
 ```bash
-nc -zv 192.168.1.20 1433
-# Connection to 192.168.1.20 1433 port [tcp/*] succeeded!
+nc -zv ITUSRV002 1433
+# Connection to ITUSRV002 1433 port [tcp/*] succeeded!
 ```
 
 ## 6. Correr bootstrap (desde la VM Linux, en el repo clonado)
@@ -44,7 +44,7 @@ nc -zv 192.168.1.20 1433
 ```bash
 cd backend
 npm ci
-SQL_SERVER=192.168.1.20 SQL_USER=sa SQL_PASSWORD=Mysql123 SQL_DATABASE=inventario_itu node scripts/bootstrap.mjs
+SQL_SERVER=ITUSRV002 SQL_USER=sa SQL_PASSWORD=Mysql123 SQL_DATABASE=inventario_itu node scripts/bootstrap.mjs
 ```
 
 Debe crear la tabla `machines` en la base `inventario_itu`.

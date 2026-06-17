@@ -15,7 +15,7 @@
 | pfSense WAN | `<WAN_IP>` | Gateway externo (WiFi del aula) |
 | pfSense LAN | `192.168.1.254` | Gateway interno |
 | Ubuntu Server (VM Linux) | `192.168.1.50` | Minikube + GitHub Runner |
-| SQL Server | `192.168.1.20` | Base de datos relacional |
+| SQL Server | `ITUSRV002 (192.168.1.20)` | Base de datos relacional |
 | Active Directory | `192.168.1.10` | Autenticación LDAP |
 | Minikube (interno) | `192.168.49.2` | Clúster K8s (no accesible directo desde LAN) |
 
