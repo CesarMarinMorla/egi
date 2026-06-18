@@ -42,8 +42,10 @@ function mapAdGroupToRole(groups: string[]): UserRole {
 	};
 
 	for (const group of groups) {
-		if (groupMap[group]) {
-			return groupMap[group];
+		const match = group.match(/^CN=([^,]+)/i);
+		const groupName = match ? match[1] : group;
+		if (groupMap[groupName]) {
+			return groupMap[groupName];
 		}
 	}
 
@@ -98,7 +100,7 @@ export async function createLdapClient(): Promise<ILdapClient> {
 				const sAMAccountNameStr =
 					typeof sAMAccountName === "string" ? sAMAccountName : sAMAccountName ? String(sAMAccountName) : "";
 				const displayName = cnStr || sAMAccountNameStr || username;
-				const memberOf = (userEntry.memberOf as string[]) || [];
+				const memberOf = Array.isArray(userEntry.memberOf) ? (userEntry.memberOf as string[]) : userEntry.memberOf ? [userEntry.memberOf as string] : [];
 
 				// Map AD groups to role
 				const role = mapAdGroupToRole(memberOf);
@@ -142,7 +144,7 @@ export async function createLdapClient(): Promise<ILdapClient> {
 					const cn = Array.isArray(entry.cn) ? entry.cn[0] : entry.cn;
 					const sAMAccountName = Array.isArray(entry.sAMAccountName) ? entry.sAMAccountName[0] : entry.sAMAccountName;
 					const mail = Array.isArray(entry.mail) ? entry.mail[0] : entry.mail;
-					const memberOf = (entry.memberOf as string[]) || [];
+					const memberOf = Array.isArray(entry.memberOf) ? (entry.memberOf as string[]) : entry.memberOf ? [entry.memberOf as string] : [];
 					const userAccountControl = Array.isArray(entry.userAccountControl)
 						? entry.userAccountControl[0]
 						: entry.userAccountControl;
@@ -183,7 +185,7 @@ export async function createLdapClient(): Promise<ILdapClient> {
 				const cn = Array.isArray(entry.cn) ? entry.cn[0] : entry.cn;
 				const sAMAccountName = Array.isArray(entry.sAMAccountName) ? entry.sAMAccountName[0] : entry.sAMAccountName;
 				const mail = Array.isArray(entry.mail) ? entry.mail[0] : entry.mail;
-				const memberOf = (entry.memberOf as string[]) || [];
+				const memberOf = Array.isArray(entry.memberOf) ? (entry.memberOf as string[]) : entry.memberOf ? [entry.memberOf as string] : [];
 				const userAccountControl = Array.isArray(entry.userAccountControl)
 					? entry.userAccountControl[0]
 					: entry.userAccountControl;
