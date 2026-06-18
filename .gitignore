@@ -32,3 +32,6 @@ _runner/
 
 # database backups
 *.sql.bak
+
+# ad-hoc test scripts
+test-*.mjs
