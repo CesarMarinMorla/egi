@@ -45,7 +45,8 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 - [x] **Merge `develop` → `main`** — completado
 - [x] **Deploy core + seed separados** — `k8s/deploy-core.sh` + `k8s/seed-data.sh`
 - [x] **MongoDB bootstrap automático** — Job idempotente `k8s/mongo/seed-job.yaml` + Network Policies
-- [ ] **Deploy manual desde `main` con modo real** — verificar CI/CD
+- [x] **Deploy manual desde `main` con modo real** — minikube delete → start → deploy-core → seed-data ✅ verificado
+- [x] **Pruebas de gestión de usuarios (modo real)** — login sysadmin, listar 20 usuarios AD, crear usuario (falla por permisos AD, documentado en `docs/testing/pruebas-usuarios.md`)
 
 ### Próximo sprint (testing)
 
