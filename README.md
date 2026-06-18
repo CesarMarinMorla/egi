@@ -148,7 +148,9 @@ docker compose down
 
 ---
 
-### 3. Modo Kubernetes (Minikube)
+### 3. Modo Kubernetes (Minikube) — Producción
+
+El deploy en Minikube corre con `MOCK_MODE=false` conectándose a SQL Server real (`192.168.1.20:1433`), MongoDB in-cluster y Active Directory real (`192.168.1.10:389`).
 
 ```bash
 # Iniciar Minikube (una sola vez)
@@ -161,18 +163,28 @@ bash k8s/deploy-local.sh
 minikube service inventario-web -n inventario-itu --url
 ```
 
+Accesible desde la LAN en `http://192.168.1.50:30080`.
+
 ## Verificación
 
 ### Health check del backend
 
+**Modo dev (mock):**
 ```bash
 curl http://localhost:3001/health
 ```
+→ `{"status":"ok","mockMode":true}`
 
-**Mock mode:** `{"status":"ok","mockMode":true}`
-**Modo real:** `{"status":"ok","mockMode":false}`
+**Modo producción (Minikube):**
+```bash
+kubectl port-forward -n inventario-itu svc/inventario-backend 30010:3001 &
+sleep 1
+curl http://localhost:30010/health
+kill %1 2>/dev/null
+```
+→ `{"status":"ok","mockMode":false}` ✅ Verificado
 
-### Login de prueba
+### Login de prueba (mock — dev local)
 
 ```bash
 curl -s -X POST http://localhost:3001/api/auth/login \
@@ -180,23 +192,24 @@ curl -s -X POST http://localhost:3001/api/auth/login \
   -d '{"username":"sysadmin","password":"x"}' | jq .
 ```
 
-Devuelve un token JWT + datos del usuario.
-
-### Endpoints de datos (requiere token)
+### Endpoints de datos en Minikube (requiere token AD real)
 
 ```bash
-TOKEN=$(curl -s -X POST http://localhost:3001/api/auth/login \
+# Port-forward al backend
+kubectl port-forward -n inventario-itu svc/inventario-backend 30010:3001 &
+sleep 1
+
+TOKEN=$(curl -s -X POST http://localhost:30010/api/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"username":"sysadmin","password":"x"}' | jq -r '.token')
+  -d '{"username":"usuario-ad-real","password":"password-ad-real"}' | jq -r '.token')
 
-# Máquinas
-curl -s http://localhost:3001/api/machines -H "Authorization: Bearer $TOKEN" | jq .
+# Máquinas (desde SQL Server real)
+curl -s http://localhost:30010/api/machines -H "Authorization: Bearer $TOKEN" | jq .
 
-# Hardware
-curl -s http://localhost:3001/api/machines/1/hardware -H "Authorization: Bearer $TOKEN" | jq .
+# Hardware (desde MongoDB in-cluster)
+curl -s http://localhost:30010/api/machines/1/hardware -H "Authorization: Bearer $TOKEN" | jq .
 
-# Usuarios
-curl -s http://localhost:3001/api/users -H "Authorization: Bearer $TOKEN" | jq .
+kill %1 2>/dev/null
 ```
 
 ## Tests
@@ -208,6 +221,8 @@ npm run test:watch    # Modo watch
 ```
 
 ## Despliegue
+
+El sistema está actualmente desplegado en Minikube en `192.168.1.50:30080` con modo real (`MOCK_MODE=false`).
 
 Ver `k8s/` para manifiestos de Kubernetes y `k8s/deploy-local.sh` para deploy local en Minikube.
 

@@ -120,7 +120,9 @@ El frontend usa `VITE_USE_MOCK=false` en `.env.development`.
 | --------------- | ----------------------- | ------------------------------------------------ |
 | Máquinas        | SQL Server (`machines`) | Siempre real con `MOCK_MODE=false`               |
 | Hardware        | MongoDB (`hardware`)    | Real via `mongoClient.ts` (wired en `server.ts`) |
-| Usuarios / Auth | Mock (en memoria)       | El cliente LDAP existe pero no está conectado    |
+| Usuarios / Auth | Mock (en memoria)       | El cliente LDAP existe pero no está conectado. ⚠️ En Minikube/K8s, LDAP **sí** se conecta al AD real (`192.168.1.10:389`) |
+
+> ⚠️ **Nota sobre modos:** Este documento describe el entorno Docker Compose local. En el despliegue Minikube/K8s, el backend corre con `MOCK_MODE=false` y se conecta a SQL Server VM (`192.168.1.20:1433`), MongoDB in-cluster y AD real (`192.168.1.10:389`).
 
 El backend arranca en **mock mode** (`MOCK_MODE=true`) por defecto — todo usa arreglos en memoria. Con `MOCK_MODE=false` usa SQL Server y MongoDB reales.
 

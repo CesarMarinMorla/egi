@@ -71,7 +71,7 @@ MySQL no forma parte del stack, pero se incluye como referencia.
 > 3. Backend pueda alcanzar la IP de la VM (`telnet <IP> 1433`)
 > 4. Si SQL Server exige SSL, configurar `encrypt: true` y `trustServerCertificate: true`
 >
-> Detalles paso a paso en [`sql-server.md`](./sql-server.md#9-transición-a-la-vm-ssms--sql-server-real).
+> Detalles paso a paso en [`sql-server.md`](../despliegue/scripts/sql-server.md).
 
 ---
 

@@ -110,6 +110,18 @@ git push main
         → kubectl apply → rollout → iptables (safety net) → smoke test
 ```
 
+## Estado actual del despliegue
+
+| Componente | Estado |
+|---|---|
+| **Frontend** | `http://192.168.1.50:30080` — accesible desde LAN |
+| **Backend** | `MOCK_MODE=false` — conectando a SQL Server, MongoDB y AD reales |
+| **SQL Server** | `192.168.1.20:1433` — DB `inventario_itu`, tabla `machines`, 12 registros ✅ |
+| **Active Directory** | `192.168.1.10:389` — autenticación LDAP verificada |
+| **MongoDB** | In-cluster (`inventario-db:27017`) — colección `hardware` |
+| **Network Policies** | Default-deny + reglas explícitas para cada flujo |
+| **Última verificación** | 18/06/2026 |
+
 ## Detener
 
 ```bash

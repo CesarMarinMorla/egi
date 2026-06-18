@@ -102,7 +102,9 @@ sudo systemctl status iptables-restore minikube docker
 | `docker.service` | `enabled`, `active (running)` |
 
 | Origen | Acceso al frontend | Fecha |
-|---|---|---|
+|---|---|---|---|
 | AD (`192.168.1.10`) | ✅ | 10/06/2026 |
 | Lubuntu (`192.168.1.x`) | ✅ | 10/06/2026 |
-| Host Windows | ❌ Pendiente (pfSense) | — |
+| Host Windows | ❌ Pendiente (pfSense) — requiere NAT reflection | — |
+
+**Última verificación completa:** 18/06/2026 — todos los servicios funcionando en modo real (`MOCK_MODE=false`).

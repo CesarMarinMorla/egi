@@ -17,6 +17,6 @@
 
 | Guía | Descripción |
 |---|---|
-| [testing/local-dev.md](../testing/local-dev.md) | Modo mock con `npm run dev` (sin Docker) |
+| [testing/dev-local.md](../testing/dev-local.md) | Modo mock con `npm run dev` (sin Docker) |
 | [testing/docker-compose.md](../testing/docker-compose.md) | SQL Server + MongoDB via Docker Compose |
 | [testing/minikube-local.md](../testing/minikube-local.md) | Minikube local con mock mode |

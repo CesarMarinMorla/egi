@@ -38,28 +38,30 @@ Las soluciones marcadas pueden estorbar el testing manual o automatizado si no s
 
 ---
 
-## 2. Problemas que aparecerán en producción real (pfSense + AD)
+## 2. Problemas que aplican en producción real (pfSense + AD)
 
-Estos requieren infraestructura y configuración adicionales. No aplican hoy porque no hay AD ni SQL Server externo en el cluster.
+⚠️ **Estos problemas aplican ahora** — el backend en Minikube corre con `MOCK_MODE=false` y se conecta a AD real (`192.168.1.10:389`), SQL Server real (`192.168.1.20:1433`) y MongoDB in-cluster.
 
 ### 2.1 Autenticación y transporte
 
 | #   | Severidad   | Problema                                      | Detalle                                                           | Solución                                                                     |
 | --- | ----------- | --------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 11  | **Crítico** | Inyección LDAP en filtro de búsqueda          | `ldapClient.ts:81` interpola `username` directamente en el filter | Escapar caracteres especiales LDAP (RFC 4514) antes de interpolar            |
-| 12  | **Crítico** | Inyección LDAP en `getUserById`               | `ldapClient.ts:175` interpola `id` en el DN filter                | Usar búsqueda por atributo en vez de interpolación directa                   |
-| 13  | **Alto**    | Conexión LDAP sin TLS (`ldap://` por defecto) | `ldapClient.ts:60` — credenciales viajan en texto plano           | Usar `ldaps://` con certificado válido                                       |
-| 14  | **Alto**    | Sin HTTPS en backend                          | `server.ts:46` — todo viaja en texto plano                        | Terminar TLS en pfSense (WAF) o en un reverse proxy (nginx)                  |
-| 15  | **Medio**   | SQL Server sin conexión cifrada               | `config.ts:33-34` — `encrypt: false` por defecto                  | Forzar `SQL_ENCRYPT=true` y `SQL_TRUST_SERVER_CERTIFICATE=false`             |
-| 16  | **Medio**   | MongoDB sin autenticación ni TLS              | `mongoClient.ts:11` — conexión anónima                            | Configurar auth en MongoDB y usar `mongodb://user:pass@host:27017/?tls=true` |
+| #   | Severidad   | Problema                                      | Detalle                                                           | Solución                                                                     |
+| --- | ----------- | --------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 11  | **Crítico** | ⚠️ Inyección LDAP en filtro de búsqueda      | `ldapClient.ts:81` interpola `username` en el filter — conexión AD real activa | Escapar caracteres especiales LDAP (RFC 4514) antes de interpolar            |
+| 12  | **Crítico** | ⚠️ Inyección LDAP en `getUserById`           | `ldapClient.ts:175` interpola `id` en el DN filter — conexión AD real activa | Usar búsqueda por atributo en vez de interpolación directa                   |
+| 13  | **Alto**    | ⚠️ Conexión LDAP sin TLS (`ldap://`)         | `ldapClient.ts:60` — credenciales viajan en texto plano hacia AD real | Usar `ldaps://` con certificado válido                                       |
+| 14  | **Alto**    | ⚠️ Sin HTTPS en backend                      | `server.ts:46` — todo viaja en texto plano                        | Terminar TLS en pfSense (WAF) o en un reverse proxy (nginx)                  |
+| 15  | **Medio**   | ⚠️ SQL Server sin conexión cifrada            | `config.ts:33-34` — `encrypt: false`, `trustServerCertificate: true` | Forzar `SQL_ENCRYPT=true` y `SQL_TRUST_SERVER_CERTIFICATE=false`             |
+| 16  | **Medio**   | ⚠️ MongoDB sin autenticación ni TLS           | `mongoClient.ts:11` — conexión anónima                            | Configurar auth en MongoDB y usar `mongodb://user:pass@host:27017/?tls=true` |
 
 ### 2.2 Gestión de secretos
 
 | #   | Severidad   | Problema                                              | Detalle                                                                    | Solución                                                                           |
 | --- | ----------- | ----------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| 17  | **Crítico** | Secretos en texto plano en manifiestos K8s            | `k8s/backend/secret.yaml` — JWT, SQL password visibles en el repo          | Usar `ExternalSecret` o `SealedSecret` con cifrado; nunca commitear secrets reales |
+| 17  | **Crítico** | ⚠️ Secretos en texto plano en manifiestos K8s        | `k8s/backend/secret.yaml` — JWT, SQL password visibles en el repo          | Usar `ExternalSecret` o `SealedSecret` con cifrado; nunca commitear secrets reales |
 | 18  | **Alto**    | SA password `Mysql123` como default en docker-compose | `docker-compose.yml:8` — password débil del admin de SQL Server            | Generar password fuerte y pasarla vía variable de entorno                          |
-| 19  | **Medio**   | LDAP bind credentials default a string vacío          | `ldapClient.ts:61-62` — si no se configura, la autenticación salta el bind | Validar en startup que `LDAP_BIND_DN` y `LDAP_BIND_PASSWORD` estén definidos       |
+| 19  | **Medio**   | LDAP bind credentials default a string vacío          | `ldapClient.ts:61-62` — si no se configura, la autenticación salta el bind | ✅ Ya resuelto — validación en startup implementada                                |
 
 ### 2.3 Red y firewall (pfSense)
 
@@ -67,7 +69,7 @@ Estos requieren infraestructura y configuración adicionales. No aplican hoy por
 | --- | --------- | --------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | 20  | **Alto**  | Sin HTTPS entre pfSense y el frontend               | El NodePort 30080 sirve HTTP plano                    | Configurar regla en pfSense para redirigir puerto 443 → 30080 (o usar Ingress con TLS)     |
 | 21  | **Medio** | MongoDB y SQL Server expuestos al host              | Puertos mapeados en docker-compose para dev           | En prod no exponer puertos de bases de datos al host; solo acceso interno entre containers |
-| 22  | **Medio** | Network policies en K8s permiten egress a IPs fijas | SQL (`192.168.56.30:1433`) y AD (`192.168.56.40:389`) | Verificar que pfSense aisle esas VMs y solo el cluster pueda alcanzarlas                   |
+| 22  | **Medio** | ✅ Network policies en K8s bloquean acceso externo   | SQL (`192.168.1.20:1433`) y AD (`192.168.1.10:389`)  | Ya implementadas — `deny-all-default` + reglas explícitas de egress para backend           |
 
 ### 2.4 Aplicación
 
@@ -75,7 +77,7 @@ Estos requieren infraestructura y configuración adicionales. No aplican hoy por
 | --- | --------- | ---------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------- |
 | 23  | **Alto**  | Sin CSRF protection                                  | No hay token CSRF ni SameSite cookies    | Si se usan cookies para auth, implementar double-submit cookie o SameSite=Strict      |
 | 24  | **Medio** | Sin password hashing                                 | No se usa bcrypt/argon2 en ninguna parte | LDAP maneja la contraseña, pero si se implementa auth local, hashear con bcrypt       |
-| 25  | **Bajo**  | No hay logging de intentos fallidos de autenticación | Login fallido no se registra             | Agregar logger estructurado que registre intentos fallidos con timestamp, IP, usuario |
+| 25  | **Bajo**  | ✅ Logging de intentos fallidos implementado          | Ya se registran intentos fallidos en logs | [AUTH FAIL] user=... ip=... reason=... |
 
 ---
 

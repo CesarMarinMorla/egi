@@ -61,7 +61,7 @@ kubectl get svc -n inventario-itu
 | Hardware        | MongoDB (`hardware`)    | `inventario-db:27017` (dentro del cluster) |
 | Usuarios / Auth | AD (`192.168.1.10:389`) | AD (`192.168.1.10:389`)             |
 
-> El Secret ahora tiene `MOCK_MODE: "false"` por defecto. Para probar solo localmente sin las VMs, cambiarlo a `MOCK_MODE: "true"` y comentar las configs de SQL, MongoDB y LDAP.
+> El Secret tiene `MOCK_MODE: "false"` y está verificado funcionando. Para probar solo localmente sin las VMs, cambiarlo a `MOCK_MODE: "true"` y comentar las configs de SQL, MongoDB y LDAP.
 
 ## Acceso desde la red local
 
@@ -92,7 +92,7 @@ iptables -t nat -D PREROUTING -p tcp --dport 30080 \
 ## Notas
 
 - Las imágenes `inventario-web` e `inventario-backend` se construyen localmente en el daemon de Minikube (no están en ningún registry). `mongo:4.4` se pullea de Docker Hub.
-- El backend arranca en **modo real** (`MOCK_MODE=false`) y se conecta a SQL Server, MongoDB y AD en las VMs de la red local.
+- El backend arranca en **modo real** (`MOCK_MODE=false`) y se conecta a SQL Server, MongoDB y AD en las VMs de la red local. ✅ Verificado — health endpoint responde `{"status":"ok","mockMode":false}`.
 - El health check del backend está en `/health` (no `/api/health`).
 
 ## Arquitectura
@@ -101,8 +101,8 @@ iptables -t nat -D PREROUTING -p tcp --dport 30080 \
 flowchart TB
     subgraph External[" "]
         User(["User"])
-        SQL[("SQL Server<br/>192.168.56.30:1433")]
-        AD[("Active Directory<br/>192.168.56.40:389")]
+        SQL[("SQL Server<br/>192.168.1.20:1433")]
+        AD[("Active Directory<br/>192.168.1.10:389")]
     end
 
     subgraph FW["pfSense Firewall"]
