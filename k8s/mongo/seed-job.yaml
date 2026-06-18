@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-seed
+  namespace: inventario-itu
+  labels:
+    app: inventario-db
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        job: mongo-seed
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: seed
+          image: mongo:4.4
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              HOST="inventario-db:27017"
+              DB="inventario_itu"
+              COLL="hardware"
+              FILE="/seed/hardware.json"
+
+              echo "Esperando a que MongoDB esté listo..."
+              for i in $(seq 1 30); do
+                mongo --quiet --host "$HOST" --eval 'db.runCommand({ ping: 1 })' >/dev/null 2>&1 && break
+                echo "Intento $i — esperando..."
+                sleep 2
+              done
+
+              if [ "${FORCE_RESET:-false}" = "true" ]; then
+                echo "FORCE_RESET activado — eliminando colección $COLL"
+                mongo --quiet --host "$HOST" --eval "db.getSiblingDB('$DB').$COLL.drop()"
+              fi
+
+              COUNT=$(mongo --quiet --host "$HOST" --eval "db.getSiblingDB('$DB').$COLL.countDocuments({})" 2>/dev/null || echo "0")
+
+              if [ "$COUNT" = "0" ]; then
+                echo "Colección $COLL vacía — importando datos..."
+                mongoimport --host "$HOST" --db "$DB" --collection "$COLL" --file "$FILE" --jsonArray
+                echo "Seed completado correctamente"
+              else
+                echo "Colección $COLL ya tiene $COUNT documento(s) — saltando seed"
+              fi
+          env:
+            - name: FORCE_RESET
+              value: "false"
+          volumeMounts:
+            - name: seed-data
+              mountPath: /seed
+      volumes:
+        - name: seed-data
+          configMap:
+            name: hardware-seed

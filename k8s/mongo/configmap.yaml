@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hardware-seed
+  namespace: inventario-itu
+  labels:
+    app: inventario-db
+data:
+  hardware.json: |
+    [
+      { "machineId": 1,  "type": "desktop", "manufacturer": "Dell",   "model": "OptiPlex 7090",      "cpu": "Intel i5-11500",  "ramGb": 16, "diskGb": 512,  "os": "Windows 11", "monitor": "Dell P2422H 24\"", "mouse": "Logitech M185",  "keyboard": "Genius KB-118"  },
+      { "machineId": 2,  "type": "desktop", "manufacturer": "HP",     "model": "ProDesk 400 G7",     "cpu": "Intel i5-10500",  "ramGb": 8,  "diskGb": 256,  "os": "Windows 10", "monitor": "HP V224 22\"",     "mouse": "HP estándar",    "keyboard": "HP estándar"    },
+      { "machineId": 3,  "type": "laptop",  "manufacturer": "Lenovo", "model": "ThinkPad L14",       "cpu": "Intel i7-1165G7", "ramGb": 16, "diskGb": 512,  "os": "Windows 11", "monitor": "Integrada 14\"",   "mouse": "\u2014",              "keyboard": "Integrado"      },
+      { "machineId": 5,  "type": "desktop", "manufacturer": "Dell",   "model": "OptiPlex 3020",      "cpu": "Intel i3-4130",   "ramGb": 4,  "diskGb": 500,  "os": "Windows 7",  "monitor": "Sin monitor",      "mouse": "\u2014",              "keyboard": "\u2014"              },
+      { "machineId": 6,  "type": "desktop", "manufacturer": "Dell",   "model": "OptiPlex 7080",      "cpu": "Intel i5-10500",  "ramGb": 16, "diskGb": 512,  "os": "Windows 11", "monitor": "Dell P2419H",      "mouse": "Logitech M170",  "keyboard": "Genius KB-110"  },
+      { "machineId": 7,  "type": "laptop",  "manufacturer": "HP",     "model": "ProBook 450 G8",     "cpu": "Intel i5-1135G7", "ramGb": 8,  "diskGb": 256,  "os": "Windows 11", "monitor": "Integrada 15.6\"", "mouse": "Touchpad",       "keyboard": "Integrado"      },
+      { "machineId": 9,  "type": "desktop", "manufacturer": "Lenovo", "model": "ThinkCentre M720q",  "cpu": "Intel i5-9400T",  "ramGb": 16, "diskGb": 512,  "os": "Windows 10", "monitor": "Lenovo L24e-30",   "mouse": "Lenovo",         "keyboard": "Lenovo"         },
+      { "machineId": 10, "type": "desktop", "manufacturer": "Dell",   "model": "OptiPlex 7010",      "cpu": "Intel i5-12500",  "ramGb": 16, "diskGb": 512,  "os": "Windows 11", "monitor": "Dell S2421H",      "mouse": "Logitech M185",  "keyboard": "Genius KB-118"  },
+      { "machineId": 11, "type": "desktop", "manufacturer": "HP",     "model": "EliteDesk 800 G6",   "cpu": "Intel i7-10700",  "ramGb": 32, "diskGb": 1024, "os": "Windows 11", "monitor": "HP E24 G4",        "mouse": "HP",             "keyboard": "HP"             },
+      { "machineId": 12, "type": "desktop", "manufacturer": "Dell",   "model": "OptiPlex 9010",      "cpu": "Intel i5-3470",   "ramGb": 8,  "diskGb": 256,  "os": "Windows 10", "monitor": "\u2014",                "mouse": "\u2014",              "keyboard": "\u2014"              }
+    ]

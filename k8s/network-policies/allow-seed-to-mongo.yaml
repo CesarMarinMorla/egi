@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-seed-to-mongo
+  namespace: inventario-itu
+spec:
+  podSelector:
+    matchLabels:
+      job: mongo-seed
+  egress:
+    - ports:
+        - port: 27017
+          protocol: TCP
+      to:
+        - podSelector:
+            matchLabels:
+              app: inventario-db
+  policyTypes:
+    - Egress

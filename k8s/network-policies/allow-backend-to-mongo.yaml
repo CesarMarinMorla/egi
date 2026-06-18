@@ -15,6 +15,9 @@ spec:
         - podSelector:
             matchLabels:
               app: inventario-backend
+        - podSelector:
+            matchLabels:
+              job: mongo-seed
       ports:
         - protocol: TCP
           port: 27017

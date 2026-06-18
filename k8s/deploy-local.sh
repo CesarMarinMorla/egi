@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Despliega el ecosistema en Minikube (imágenes locales).
+# Despliegue completo local: build imágenes + core + seed data.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -17,17 +17,17 @@ kubectl create secret docker-registry ghcr-credentials \
   --namespace=inventario-itu \
   --dry-run=client -o yaml | kubectl apply -f - 2>/dev/null || true
 
-echo "==> Aplicar manifiestos"
-kubectl apply -f "$ROOT/k8s/namespace/"
-kubectl apply -f "$ROOT/k8s/mongo/"
-kubectl apply -f "$ROOT/k8s/backend/"
-kubectl apply -f "$ROOT/k8s/frontend/"
-kubectl apply -f "$ROOT/k8s/network-policies/"
-
-echo "==> Esperar pods"
-kubectl rollout status deployment/inventario-db -n inventario-itu --timeout=120s
-kubectl rollout status deployment/inventario-backend -n inventario-itu --timeout=120s
-kubectl rollout status deployment/inventario-web -n inventario-itu --timeout=120s
+echo ""
+echo "========================================"
+echo "  Fase 1 — Core (cluster sin datos)"
+echo "========================================"
+bash "$ROOT/k8s/deploy-core.sh"
 
 echo ""
-bash "$ROOT/k8s/setup-host-networking.sh"
+echo "========================================"
+echo "  Fase 2 — Seed data"
+echo "========================================"
+bash "$ROOT/k8s/seed-data.sh"
+
+echo ""
+echo "✅ Despliegue local completo"

@@ -156,12 +156,24 @@ El deploy en Minikube corre con `MOCK_MODE=false` conectándose a SQL Server rea
 # Iniciar Minikube (una sola vez)
 minikube start --cni=calico
 
-# Build imágenes locales + deploy
+# Build imágenes locales + deploy completo (core + seed)
 bash k8s/deploy-local.sh
 
-# Obtener URL del frontend
-minikube service inventario-web -n inventario-itu --url
+# O solo el core (cluster sin datos)
+bash k8s/deploy-core.sh
+
+# Poblar datos después del core
+bash k8s/seed-data.sh
 ```
+
+El deploy se divide en dos fases:
+
+| Fase | Script | Qué hace |
+|------|--------|----------|
+| **Core** | `k8s/deploy-core.sh` | Namespace → MongoDB → Backend → Frontend → Network Policies → iptables → smoke test |
+| **Seed** | `k8s/seed-data.sh` | SQL bootstrap (externo) + MongoDB Job idempotente (ConfigMap + Job) |
+
+El Job de MongoDB (`k8s/mongo/seed-job.yaml`) es idempotente: si la colección `hardware` ya tiene documentos, salta el seed.
 
 Accesible desde la LAN en `http://192.168.1.50:30080`.
 

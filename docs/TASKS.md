@@ -42,7 +42,10 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 
 ### Próximo paso
 
-- [ ] **Merge `develop` → `main`** — SQL + AD ya funcionan, el merge está desbloqueado
+- [x] **Merge `develop` → `main`** — completado
+- [x] **Deploy core + seed separados** — `k8s/deploy-core.sh` + `k8s/seed-data.sh`
+- [x] **MongoDB bootstrap automático** — Job idempotente `k8s/mongo/seed-job.yaml` + Network Policies
+- [ ] **Deploy manual desde `main` con modo real** — verificar CI/CD
 
 ### Próximo sprint (testing)
 
