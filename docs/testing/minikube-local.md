@@ -57,11 +57,11 @@ kubectl get svc -n inventario-itu
 
 | Dato            | Backend                 | K8s                                 |
 | --------------- | ----------------------- | ----------------------------------- |
-| Máquinas        | SQL Server (`machines`) | Mock (sin SQL Server en el cluster) |
-| Hardware        | MongoDB (`hardware`)    | Mock (`MOCK_MODE=true`)             |
-| Usuarios / Auth | Mock (en memoria)       | Mock                                |
+| Máquinas        | SQL Server (`machines`) | `192.168.1.20:1433` (VMs reales)    |
+| Hardware        | MongoDB (`hardware`)    | `inventario-db:27017` (dentro del cluster) |
+| Usuarios / Auth | AD (`192.168.1.10:389`) | AD (`192.168.1.10:389`)             |
 
-En el cluster, `MOCK_MODE=true` en el Secret, así que todo usa arreglos en memoria. Para activar modo real, editar `k8s/backend/secret.yaml`: descomentar `MOCK_MODE: "false"`, `MONGO_URI` y `MONGO_DB_NAME`, y apuntar SQL Server a una instancia accesible.
+> El Secret ahora tiene `MOCK_MODE: "false"` por defecto. Para probar solo localmente sin las VMs, cambiarlo a `MOCK_MODE: "true"` y comentar las configs de SQL, MongoDB y LDAP.
 
 ## Acceso desde la red local
 
@@ -91,8 +91,8 @@ iptables -t nat -D PREROUTING -p tcp --dport 30080 \
 
 ## Notas
 
-- Las imágenes `inventario-web` e `inventario-backend` se construyen localmente en el daemon de Minikube (no están en ningún registry). `mongo:7` se pullea de Docker Hub.
-- El backend arranca en **mock mode** (`MOCK_MODE=true` en el Secret) porque no hay SQL Server ni Active Directory dentro del cluster.
+- Las imágenes `inventario-web` e `inventario-backend` se construyen localmente en el daemon de Minikube (no están en ningún registry). `mongo:4.4` se pullea de Docker Hub.
+- El backend arranca en **modo real** (`MOCK_MODE=false`) y se conecta a SQL Server, MongoDB y AD en las VMs de la red local.
 - El health check del backend está en `/health` (no `/api/health`).
 
 ## Arquitectura

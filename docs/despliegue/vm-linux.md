@@ -82,12 +82,13 @@ SQL_USER: "sa"
 SQL_PASSWORD: "Mysql123"
 SQL_DATABASE: "inventario_itu"
 SQL_ENCRYPT: "false"
+SQL_TRUST_SERVER_CERTIFICATE: "true"
 MONGO_URI: "mongodb://inventario-db:27017"
-MONGO_DB_NAME: "inventario"
+MONGO_DB_NAME: "inventario_itu"
 LDAP_URL: "ldap://192.168.1.10:389"
 LDAP_SEARCH_BASE: "DC=itu,DC=local"
-LDAP_BIND_DN: "CN=svc-inventario,CN=Users,DC=itu,DC=local"
-LDAP_BIND_PASSWORD: "<password>"
+LDAP_BIND_DN: "CN=svc_egi_ldap,OU=EGI,DC=itu,DC=local"
+LDAP_BIND_PASSWORD: "EgiLdap2026!"
 LDAP_SEARCH_FILTER: "(sAMAccountName={username})"
 ```
 
@@ -133,6 +134,14 @@ En **repo → Settings → Secrets and variables → Actions**:
 | `SQL_PASSWORD` | `Mysql123`       |
 | `SQL_DATABASE` | `inventario_itu` |
 | `SQL_ENCRYPT`  | `false`          |
+| `SQL_TRUST_SERVER_CERTIFICATE` | `true`           |
+| `MONGO_URI`    | `mongodb://inventario-db:27017` |
+| `MONGO_DB_NAME` | `inventario_itu` |
+| `LDAP_URL`     | `ldap://192.168.1.10:389` |
+| `LDAP_SEARCH_BASE` | `DC=itu,DC=local` |
+| `LDAP_BIND_DN` | `CN=svc_egi_ldap,OU=EGI,DC=itu,DC=local` |
+| `LDAP_BIND_PASSWORD` | `EgiLdap2026!` |
+| `LDAP_SEARCH_FILTER` | `(sAMAccountName={username})` |
 
 ## 10. Primer deploy
 

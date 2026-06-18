@@ -24,9 +24,9 @@ Estos cambios están commiteados en `develop` y ya pueden deployarse manualmente
 - [x] RBAC faltante en `PUT /hardware/:machineId` corregido
 - [x] Logging de intentos de login fallidos
 - [x] Escape de inputs LDAP (inyección)
-- [x] Default `ldaps://` en vez de `ldap://`
+- [x] Default `ldaps://` en vez de `ldap://` (pero secret actual usa `ldap://`)
 - [x] Validación de bind credentials al startup (solo si `MOCK_MODE=false`)
-- [x] `SQL_ENCRYPT` default `true`
+- [x] `SQL_ENCRYPT` default `true` (pero secret lo overridea a `false`)
 - [x] `sanitizeInput` aplicado en validación Zod del frontend
 - [x] Docker Compose: sin password default, puertos bindeados a `127.0.0.1`
 - [x] `.env.example` completo con todas las variables
@@ -34,7 +34,7 @@ Estos cambios están commiteados en `develop` y ya pueden deployarse manualmente
 ## 3. 🔴 Roadblocks — Sin esto no se termina el setup
 
 - [ ] **SQL Server** (`ITUSRV002 / 192.168.1.20:1433`) — ping y puerto 1433 OK. Falta crear DB y bootstrap
-- [ ] **Active Directory** — conectividad OK, falta configurar bind credentials y verificar autenticación real contra la app
+- [x] **Active Directory** — bind credentials configurados en secret, autenticación real funcionando
 - [ ] **Merge `develop` → `main`** — recién después de tener SQL + AD funcionando en modo real
 
 ## 4. ⏳ Pendiente — No bloquea setup inicial

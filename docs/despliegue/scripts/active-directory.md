@@ -125,8 +125,8 @@ nc -zv 192.168.1.10 389
 ```yaml
 LDAP_URL: "ldap://192.168.1.10:389"
 LDAP_SEARCH_BASE: "DC=itu,DC=local"
-LDAP_BIND_DN: "CN=svc-inventario,CN=Users,DC=itu,DC=local"
-LDAP_BIND_PASSWORD: "<password del paso 3>"
+LDAP_BIND_DN: "CN=svc_egi_ldap,OU=EGI,DC=itu,DC=local"
+LDAP_BIND_PASSWORD: "EgiLdap2026!"
 LDAP_SEARCH_FILTER: "(sAMAccountName={username})"
 ```
 
