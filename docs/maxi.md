@@ -80,7 +80,7 @@ npm ci
 SQL_SERVER=192.168.1.20 SQL_USER=sa SQL_PASSWORD=Mysql123 SQL_DATABASE=inventario_itu node scripts/bootstrap.mjs
 ```
 
-Si todo sale bien, el script crea la base `inventario_itu` y la tabla `machines`.
+✅ **El bootstrap ya se ejecutó exitosamente.** La base `inventario_itu` y la tabla `machines` existen con 12 registros de seed. Solo re-ejecutar con `FORCE_RESET=true` si se necesita un reset completo.
 
 ---
 

@@ -47,4 +47,33 @@ npm ci
 SQL_SERVER=192.168.1.20 SQL_USER=sa SQL_PASSWORD=Mysql123 SQL_DATABASE=inventario_itu node scripts/bootstrap.mjs
 ```
 
-Debe crear la tabla `machines` en la base `inventario_itu`.
+✅ **Bootstrap ya ejecutado.** La tabla `machines` existe con 12 registros de seed. Solo re-ejecutar con `FORCE_RESET=true` si se necesita un reset.
+
+## 7. Verificar
+
+```bash
+# Desde la VM Linux, en backend/
+SQL_SERVER=192.168.1.20 SQL_USER=sa SQL_PASSWORD=Mysql123 SQL_DATABASE=inventario_itu node -e "
+const sql = require('mssql');
+async function check() {
+  await sql.connect({
+    server: process.env.SQL_SERVER, port: 1433,
+    user: process.env.SQL_USER, password: process.env.SQL_PASSWORD,
+    database: process.env.SQL_DATABASE,
+    options: { encrypt: false, trustServerCertificate: true }
+  });
+  const tables = await sql.query('SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_CATALOG = DB_NAME()');
+  console.log('Tablas:', tables.recordset.map(t => t.TABLE_NAME));
+  const count = await sql.query('SELECT COUNT(*) AS cnt FROM machines');
+  console.log('Registros en machines:', count.recordset[0].cnt);
+  await sql.close();
+}
+check().catch(e => { console.error(e.message); process.exit(1); });
+"
+```
+
+Salida verificada (18/06/2026):
+```
+Tablas: [ 'machines' ]
+Registros en machines: 12
+```

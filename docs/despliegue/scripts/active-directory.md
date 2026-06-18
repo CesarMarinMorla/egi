@@ -142,3 +142,5 @@ curl -s -X POST http://localhost:30080/api/auth/login \
   -d '{"username":"jperez","password":"su-password-real"}' | jq .
 # Debe devolver token + role del usuario
 ```
+
+✅ **Autenticación verificada** — el backend se conecta al AD real (`192.168.1.10:389`) y rechaza usuarios inválidos con `"LDAP authentication failed: User not found in AD"`. Los intentos fallidos se registran en los logs del backend.

@@ -31,13 +31,18 @@ Estos cambios están commiteados en `develop` y ya pueden deployarse manualmente
 - [x] Docker Compose: sin password default, puertos bindeados a `127.0.0.1`
 - [x] `.env.example` completo con todas las variables
 
-## 3. 🔴 Roadblocks — Sin esto no se termina el setup
+## 3. 🟢 Roadblocks resueltos
 
-- [ ] **SQL Server** (`ITUSRV002 / 192.168.1.20:1433`) — ping y puerto 1433 OK. Falta crear DB y bootstrap
+- [x] **SQL Server** (`ITUSRV002 / 192.168.1.20:1433`) — ping, puerto 1433, DB `inventario_itu`, tabla `machines` y seed data (12 registros) verificados
 - [x] **Active Directory** — bind credentials configurados en secret, autenticación real funcionando
-- [ ] **Merge `develop` → `main`** — recién después de tener SQL + AD funcionando en modo real
+
+Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 
 ## 4. ⏳ Pendiente — No bloquea setup inicial
+
+### Próximo paso
+
+- [ ] **Merge `develop` → `main`** — SQL + AD ya funcionan, el merge está desbloqueado
 
 ### Próximo sprint (testing)
 
@@ -71,9 +76,9 @@ Estos cambios están commiteados en `develop` y ya pueden deployarse manualmente
 - [ ] CSRF protection (evaluar si aplica con Bearer tokens)
 - [ ] Documentar configuración de MongoDB en producción
 
-## Información pendiente de confirmar
+## Información confirmada
 
-- [ ] Dominio AD exacto (se asume `itu.local`)
-- [ ] Atributo de login LDAP: `sAMAccountName` o `userPrincipalName`
-- [ ] Usuario de servicio para bind LDAP (nombre y password)
-- [ ] Si el examen requiere HTTPS
+- [x] **Dominio AD:** `itu.local`
+- [x] **Atributo de login LDAP:** `sAMAccountName`
+- [x] **Usuario de servicio bind LDAP:** `CN=svc_egi_ldap,OU=EGI,DC=itu,DC=local` / `EgiLdap2026!`
+- [ ] **HTTPS:** pendiente de confirmar si el examen lo requiere

@@ -66,3 +66,5 @@ Write-Host ""
 Write-Host "=== Stub completado ===" -ForegroundColor Cyan
 Write-Host "Ejecutar bootstrap desde VM Linux:"
 Write-Host "cd backend && npm ci && SQL_SERVER=192.168.1.20 SQL_USER=sa SQL_PASSWORD=$SaPassword SQL_DATABASE=$DbName node scripts/bootstrap.mjs"
+Write-Host ""
+Write-Host "✅ Ya ejecutado — DB $DbName, tabla machines, 12 registros verificados (18/06/2026)" -ForegroundColor Green
