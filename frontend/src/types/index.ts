@@ -57,9 +57,15 @@ export const ALL_LABS = ['Lab 101', 'Lab 102', 'Lab 201'] as const
 export const AD_GROUPS = [
   'GRP_Sysadmin',
   'GRP_Manager',
-  'GRP_Editor',
-  'GRP_Operator',
-  'GRP_ReadOnly',
+  'GRP_Editor_Lab101',
+  'GRP_Editor_Lab102',
+  'GRP_Editor_Lab201',
+  'GRP_Operator_Lab101',
+  'GRP_Operator_Lab102',
+  'GRP_Operator_Lab201',
+  'GRP_ReadOnly_Lab101',
+  'GRP_ReadOnly_Lab102',
+  'GRP_ReadOnly_Lab201',
 ] as const
 
 export type AdGroup = (typeof AD_GROUPS)[number]

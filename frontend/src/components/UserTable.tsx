@@ -37,7 +37,7 @@ export default function UserTable({
               <td>{user.displayName}</td>
               <td>{user.email}</td>
               <td>
-                <span className="groups-cell">{user.groups.join(', ')}</span>
+                <span className="groups-cell">{user.groups.map(g => g.includes(',') ? g.split(',')[0].replace('CN=', '') : g).join(', ')}</span>
               </td>
               <td>
                 <span

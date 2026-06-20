@@ -22,7 +22,7 @@ export const MOCK_AD_USERS: AdUser[] = [
     username: 'editor',
     displayName: 'Carlos Técnico',
     email: 'editor@itu.local',
-    groups: ['GRP_Editor'],
+    groups: ['GRP_Editor_Lab101'],
     enabled: true,
   },
   {
@@ -30,7 +30,7 @@ export const MOCK_AD_USERS: AdUser[] = [
     username: 'operator',
     displayName: 'Ana Operadora',
     email: 'operator@itu.local',
-    groups: ['GRP_Operator'],
+    groups: ['GRP_Operator_Lab102'],
     enabled: true,
   },
   {
@@ -38,7 +38,7 @@ export const MOCK_AD_USERS: AdUser[] = [
     username: 'readonly',
     displayName: 'Prof. Solo Lectura',
     email: 'readonly@itu.local',
-    groups: ['GRP_ReadOnly'],
+    groups: ['GRP_ReadOnly_Lab201'],
     enabled: true,
   },
   {
@@ -46,7 +46,7 @@ export const MOCK_AD_USERS: AdUser[] = [
     username: 'jperez',
     displayName: 'Juan Pérez',
     email: 'jperez@itu.local',
-    groups: ['GRP_ReadOnly'],
+    groups: ['GRP_ReadOnly_Lab201'],
     enabled: true,
   },
   {
@@ -54,7 +54,7 @@ export const MOCK_AD_USERS: AdUser[] = [
     username: 'mruiz',
     displayName: 'María Ruiz',
     email: 'mruiz@itu.local',
-    groups: ['GRP_Editor', 'GRP_Operator'],
+    groups: ['GRP_Editor_Lab101', 'GRP_Operator_Lab102'],
     enabled: false,
   },
 ]

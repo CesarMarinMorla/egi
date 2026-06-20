@@ -135,7 +135,7 @@ export async function createLdapClient(): Promise<ILdapClient> {
 					await client.bind(bindDn, bindPassword);
 				}
 
-				const { searchEntries } = await client.search(searchBase, {
+				const { searchEntries } = await client.search(`OU=EGI,${searchBase}`, {
 					scope: "sub",
 					filter: "(objectClass=user)",
 					attributes: ["dn", "cn", "sAMAccountName", "mail", "memberOf", "userAccountControl"],
@@ -264,6 +264,23 @@ export async function createLdapClient(): Promise<ILdapClient> {
 			}
 
 			await client.unbind();
+                        // Actualizar grupos
+                        try {
+                                await client.bind(bindDn, bindPassword);
+                                const { searchEntries } = await client.search(`OU=EGI,${searchBase}`, {
+                                        scope: "sub",
+                                        filter: `(member=${id})`,
+                                        attributes: ["dn"],
+                                });
+                                for (const entry of searchEntries) {
+                                        try { await client.modify(entry.dn, [new Change({ operation: "delete", modification: new Attribute({ type: "member", values: [id] }) })]); } catch { }
+                                }
+                                for (const group of input.groups) {
+                                        const groupDn = group.includes(",") ? group : `CN=${group},OU=EGI,${searchBase}`;
+                                        try { await client.modify(groupDn, [new Change({ operation: "add", modification: new Attribute({ type: "member", values: [id] }) })]); } catch { }
+                                }
+                                await client.unbind();
+                        } catch { }
 
 			return { id, username: input.username, displayName: input.displayName, email: input.email, groups: input.groups, enabled: input.enabled };
 		},
