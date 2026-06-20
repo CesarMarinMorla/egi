@@ -58,7 +58,7 @@ kubectl get svc -n inventario-itu
 | Dato            | Backend                 | K8s                                 |
 | --------------- | ----------------------- | ----------------------------------- |
 | Máquinas        | SQL Server (`machines`) | `192.168.1.20:1433` (VMs reales)    |
-| Hardware        | MongoDB (`hardware`)    | `inventario-db:27017` (dentro del cluster) |
+| Hardware        | MongoDB (`hardware`)    | `inventario-db:27017` con auth (`egi_user`) (dentro del cluster) |
 | Usuarios / Auth | AD (`192.168.1.10:389`) | AD (`192.168.1.10:389`)             |
 
 > El Secret tiene `MOCK_MODE: "false"` y está verificado funcionando. Para probar solo localmente sin las VMs, cambiarlo a `MOCK_MODE: "true"` y comentar las configs de SQL, MongoDB y LDAP.

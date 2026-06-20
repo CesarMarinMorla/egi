@@ -83,7 +83,7 @@ SQL_PASSWORD: "Mysql123"
 SQL_DATABASE: "inventario_itu"
 SQL_ENCRYPT: "false"
 SQL_TRUST_SERVER_CERTIFICATE: "true"
-MONGO_URI: "mongodb://inventario-db:27017"
+MONGO_URI: "mongodb://egi_user:EgiMongo2026!@inventario-db:27017/inventario_itu?authSource=admin"
 MONGO_DB_NAME: "inventario_itu"
 LDAP_URL: "ldap://192.168.1.10:389"
 LDAP_SEARCH_BASE: "DC=itu,DC=local"
@@ -135,7 +135,7 @@ En **repo → Settings → Secrets and variables → Actions**:
 | `SQL_DATABASE` | `inventario_itu` |
 | `SQL_ENCRYPT`  | `false`          |
 | `SQL_TRUST_SERVER_CERTIFICATE` | `true`           |
-| `MONGO_URI`    | `mongodb://inventario-db:27017` |
+| `MONGO_URI`    | `mongodb://egi_user:EgiMongo2026!@inventario-db:27017/inventario_itu?authSource=admin` |
 | `MONGO_DB_NAME` | `inventario_itu` |
 | `LDAP_URL`     | `ldap://192.168.1.10:389` |
 | `LDAP_SEARCH_BASE` | `DC=itu,DC=local` |
