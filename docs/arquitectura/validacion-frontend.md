@@ -73,14 +73,21 @@ export const adUserInputSchema = z.object({
     .max(255, "Email no puede exceder 255 caracteres")
     .regex(emailRegex, "Email inválido"),
   groups: z.array(z.custom<AdGroup>((val) => {
-    const validGroups: AdGroup[] = ["GRP_Sysadmin", "GRP_Manager", "GRP_Editor", "GRP_Operator", "GRP_ReadOnly"];
-    return validGroups.includes(val as AdGroup);
+    const validGroups = ["GRP_Sysadmin", "GRP_Manager",
+      "GRP_Editor_Lab101", "GRP_Editor_Lab102", "GRP_Editor_Lab201",
+      "GRP_Operator_Lab101", "GRP_Operator_Lab102", "GRP_Operator_Lab201",
+      "GRP_ReadOnly_Lab101", "GRP_ReadOnly_Lab102", "GRP_ReadOnly_Lab201"];
+    const valStr = String(val);
+    const groupName = valStr.includes(",") ? valStr.split(",")[0].replace("CN=", "") : valStr;
+    return validGroups.includes(groupName);
   }, "Grupo inválido"))
     .min(1, "Debe seleccionar al menos un grupo")
     .max(5, "No puede seleccionar más de 5 grupos"),
   enabled: z.boolean(),
 });
 ```
+
+> Los grupos se cambiaron a variantes por laboratorio (`GRP_Editor_Lab101`, etc.). El validador también acepta grupos en formato `CN=GRP_...,OU=EGI,...` provenientes de LDAP.
 
 #### Validación de parámetro URL
 ```typescript
