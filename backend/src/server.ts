@@ -1,5 +1,6 @@
 import config from './config.js'
 import { createApp } from './app.js'
+import { withRetry } from './utils/retry.js'
 
 const { machineRepo, hardwareRepo, authRepo, userRepo } = config.mockMode
   ? await importMockRepos()
@@ -32,8 +33,8 @@ async function importRealRepos() {
     import('./repositories/mongo/hardware.repository.js'),
     import('./repositories/ldap/user.repository.js'),
   ])
-  const sqlClient = await sqlModule.createSqlClient()
-  const mongoClient = await mongoModule.createMongoClient()
+  const sqlClient = await withRetry(() => sqlModule.createSqlClient(), 'SQL Server')
+  const mongoClient = await withRetry(() => mongoModule.createMongoClient(), 'MongoDB')
   const ldapClient = await ldapModule.createLdapClient()
   return {
     machineRepo: sqlMachineRepo.createSqlMachineRepository(sqlClient),
