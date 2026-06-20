@@ -15,7 +15,7 @@ const EMPTY_FORM: AdUserInput = {
 	username: "",
 	displayName: "",
 	email: "",
-	groups: ["GRP_ReadOnly"],
+	groups: ["GRP_ReadOnly_Lab101"],
 	enabled: true,
 };
 
@@ -36,7 +36,7 @@ export default function UserFormModal({ open, user, onClose, onSubmit }: UserFor
 					username: user.username,
 					displayName: user.displayName,
 					email: user.email,
-					groups: [...user.groups],
+					groups: user.groups.map(g => g.includes(",") ? g.split(",")[0].replace("CN=", "") : g) as AdGroup[],
 					enabled: user.enabled,
 				});
 			} else {

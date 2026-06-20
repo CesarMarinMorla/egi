@@ -47,6 +47,9 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 - [x] **MongoDB bootstrap automático** — Job idempotente `k8s/mongo/seed-job.yaml` + Network Policies
 - [x] **Deploy manual desde `main` con modo real** — minikube delete → start → deploy-core → seed-data ✅ verificado
 - [x] **Pruebas de gestión de usuarios (modo real)** — login sysadmin, listar 20 usuarios AD, crear usuario (falla por permisos AD, documentado en `docs/testing/pruebas-usuarios.md`)
+- [x] **Grupos AD con sufijo por laboratorio** — `GRP_Editor_Lab101`, `GRP_Operator_Lab102`, etc. con validación frontend actualizada
+- [x] **Sincronización de grupos en updateUser** — remueve al usuario de grupos viejos y lo agrega a los nuevos al editar
+- [x] **Búsqueda LDAP scoped a OU=EGI** — `listUsers()` ahora busca dentro de `OU=EGI,DC=itu,DC=local`
 
 ### Próximo sprint (testing)
 
@@ -62,6 +65,8 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 
 ### Próximo sprint (calidad)
 
+- [x] MachineDetail: usar `Promise.allSettled` para carga resiliente aunque falle una API
+- [x] MachineDetail: acortar mensaje de error sin acceso
 - [ ] Corregir typo en healthcheck docker-compose: `sqlservr` → `sqlservr`
 - [ ] Agregar confirmación en `FORCE_RESET` de bootstrap.mjs
 - [ ] Agregar `.nvmrc` con `20` en la raíz

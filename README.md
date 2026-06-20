@@ -241,3 +241,7 @@ Ver `k8s/` para manifiestos de Kubernetes y `k8s/deploy-local.sh` para deploy lo
 El pipeline de CI/CD (`.github/workflows/`) automatiza:
 - **CI**: lint + typecheck + build en cada PR a `main`/`develop`
 - **CD**: build de imágenes → push a GHCR → `kubectl apply` → smoke test en push a `main`
+
+## Contribuidores
+
+- **Maxi** — `lopez.maximiliano@uncuyo.edu.ar`

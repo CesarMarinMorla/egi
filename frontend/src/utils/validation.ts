@@ -88,8 +88,10 @@ export const adUserInputSchema = z.object({
 	groups: z
 		.array(
 			z.custom<AdGroup>((val) => {
-				const validGroups: AdGroup[] = ["GRP_Sysadmin", "GRP_Manager", "GRP_Editor", "GRP_Operator", "GRP_ReadOnly"];
-				return validGroups.includes(val as AdGroup);
+				const validGroups = ["GRP_Sysadmin", "GRP_Manager", "GRP_Editor_Lab101", "GRP_Editor_Lab102", "GRP_Editor_Lab201", "GRP_Operator_Lab101", "GRP_Operator_Lab102", "GRP_Operator_Lab201", "GRP_ReadOnly_Lab101", "GRP_ReadOnly_Lab102", "GRP_ReadOnly_Lab201"];
+				const valStr = String(val);
+				const groupName = valStr.includes(",") ? valStr.split(",")[0].replace("CN=", "") : valStr;
+				return validGroups.includes(groupName);
 			}, "Grupo inválido"),
 		)
 		.min(1, "Debe seleccionar al menos un grupo")

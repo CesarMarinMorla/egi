@@ -42,12 +42,13 @@ function mapAdGroupToRole(groups: string[]): UserRole {
 	};
 
 	for (const group of groups) {
-		const match = group.match(/^CN=([^,]+)/i);
-		const groupName = match ? match[1] : group;
-		if (groupMap[groupName]) {
-			return groupMap[groupName];
-		}
-	}
+                const match = group.match(/^CN=([^,]+)/i);
+                const groupName = match ? match[1] : group;
+                const baseGroupName = groupName.replace(/_Lab\d+$/i, "");
+                if (groupMap[baseGroupName]) {
+                        return groupMap[baseGroupName];
+                }
+        }
 
 	return "readonly"; // Default role
 }
@@ -109,8 +110,8 @@ export async function createLdapClient(): Promise<ILdapClient> {
 				const labs = memberOf
 					.filter((group: string) => group.includes("Lab"))
 					.map((group: string) => {
-						const match = group.match(/Lab\s*\d+/i);
-						return match ? match[0] : "";
+						const match = group.match(/Lab\s*(\d+)/i);
+						return match ? `Lab ${match[1]}` : "";
 					})
 					.filter(Boolean);
 
@@ -134,7 +135,7 @@ export async function createLdapClient(): Promise<ILdapClient> {
 					await client.bind(bindDn, bindPassword);
 				}
 
-				const { searchEntries } = await client.search(searchBase, {
+				const { searchEntries } = await client.search(`OU=EGI,${searchBase}`, {
 					scope: "sub",
 					filter: "(objectClass=user)",
 					attributes: ["dn", "cn", "sAMAccountName", "mail", "memberOf", "userAccountControl"],
@@ -211,10 +212,8 @@ export async function createLdapClient(): Promise<ILdapClient> {
 			await client.bind(bindDn, bindPassword);
 
 			const cn = input.displayName || input.username;
-			const dn = `CN=${cn},CN=Users,${searchBase}`;
+			const dn = `CN=${cn},OU=EGI,${searchBase}`;
 
-			const password = input.password ?? "Changeme1!";
-			const encodedPassword = Buffer.from(`"${password}"`, "utf16le");
 
 			await client.add(dn, {
 				objectClass: ["top", "person", "organizationalPerson", "user"],
@@ -223,13 +222,12 @@ export async function createLdapClient(): Promise<ILdapClient> {
 				userPrincipalName: `${input.username}@${searchBase.replace(/DC=/gi, "").replace(/,/g, ".")}`,
 				displayName: input.displayName,
 				mail: input.email,
-				unicodePwd: encodedPassword.toString("base64"),
-				userAccountControl: "512",
+				userAccountControl: "514",
 			});
 
 			for (const group of input.groups) {
 				try {
-					await client.modify(`CN=${group},CN=Users,${searchBase}`, [
+					await client.modify(`CN=${group},OU=EGI,${searchBase}`, [
 						new Change({ operation: "add", modification: new Attribute({ type: "member", values: [dn] }) }),
 					]);
 				} catch {
@@ -253,8 +251,8 @@ export async function createLdapClient(): Promise<ILdapClient> {
 				new Change({ operation: "replace", modification: new Attribute({ type: "userAccountControl", values: [input.enabled ? "512" : "514"] }) }),
 			];
 
-			if (input.password) {
-				const encodedPassword = Buffer.from(`"${input.password}"`, "utf16le");
+			const encodedPassword = input.password ? Buffer.from(`"${input.password}"`, "utf16le") : null;
+				if (input.password && encodedPassword) {
 				modifications.push(new Change({ operation: "replace", modification: new Attribute({ type: "unicodePwd", values: [encodedPassword.toString("base64")] }) }));
 			}
 
@@ -266,6 +264,23 @@ export async function createLdapClient(): Promise<ILdapClient> {
 			}
 
 			await client.unbind();
+                        // Actualizar grupos
+                        try {
+                                await client.bind(bindDn, bindPassword);
+                                const { searchEntries } = await client.search(`OU=EGI,${searchBase}`, {
+                                        scope: "sub",
+                                        filter: `(member=${id})`,
+                                        attributes: ["dn"],
+                                });
+                                for (const entry of searchEntries) {
+                                        try { await client.modify(entry.dn, [new Change({ operation: "delete", modification: new Attribute({ type: "member", values: [id] }) })]); } catch { }
+                                }
+                                for (const group of input.groups) {
+                                        const groupDn = group.includes(",") ? group : `CN=${group},OU=EGI,${searchBase}`;
+                                        try { await client.modify(groupDn, [new Change({ operation: "add", modification: new Attribute({ type: "member", values: [id] }) })]); } catch { }
+                                }
+                                await client.unbind();
+                        } catch { }
 
 			return { id, username: input.username, displayName: input.displayName, email: input.email, groups: input.groups, enabled: input.enabled };
 		},

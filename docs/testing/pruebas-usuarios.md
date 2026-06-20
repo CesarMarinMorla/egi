@@ -40,9 +40,9 @@ curl -s http://localhost:30010/api/users \
 |---|---|---|
 | `test_sysadmin` | sysadmin | ✅ GRP_Sysadmin |
 | `test_manager` | manager | ✅ GRP_Manager |
-| `test_editor` | editor | ✅ GRP_Editor |
-| `test_operator` | operator | ✅ GRP_Operator |
-| `test_readonly` | readonly | ✅ GRP_ReadOnly |
+| `test_editor` | editor | ✅ GRP_Editor_Lab101 |
+| `test_operator` | operator | ✅ GRP_Operator_Lab101 |
+| `test_readonly` | readonly | ✅ GRP_ReadOnly_Lab101 |
 | `svc_egi_ldap` | readonly | Service account (bind LDAP) |
 | `administrador` | readonly | Sin GRP_* (admin del dominio) |
 | `soporteit1` | readonly | Usuario real |
@@ -69,7 +69,7 @@ curl -s -X POST http://localhost:30010/api/users \
     "username": "nuevo_user",
     "displayName": "Usuario de Prueba",
     "email": "nuevo@itu.local",
-    "groups": ["GRP_Editor"],
+    "groups": ["GRP_Editor_Lab101"],
     "enabled": true,
     "password": "TempPass123!"
   }'
@@ -101,9 +101,15 @@ curl -s -X POST http://localhost:30010/api/auth/login \
 |---|---|---|---|---|
 | `GRP_Sysadmin` | sysadmin | ✅ | ✅ | ✅ |
 | `GRP_Manager` | manager | ❌ | ✅ | full CRUD |
-| `GRP_Editor` | editor | ❌ | ❌ | create + update |
-| `GRP_Operator` | operator | ❌ | ❌ | update |
-| `GRP_ReadOnly` | readonly | ❌ | ❌ | solo read |
+| `GRP_Editor_Lab101` | editor | ❌ | ❌ | create + update |
+| `GRP_Editor_Lab102` | editor | ❌ | ❌ | create + update |
+| `GRP_Editor_Lab201` | editor | ❌ | ❌ | create + update |
+| `GRP_Operator_Lab101` | operator | ❌ | ❌ | update |
+| `GRP_Operator_Lab102` | operator | ❌ | ❌ | update |
+| `GRP_Operator_Lab201` | operator | ❌ | ❌ | update |
+| `GRP_ReadOnly_Lab101` | readonly | ❌ | ❌ | solo read |
+| `GRP_ReadOnly_Lab102` | readonly | ❌ | ❌ | solo read |
+| `GRP_ReadOnly_Lab201` | readonly | ❌ | ❌ | solo read |
 | *(ninguno)* | readonly | ❌ | ❌ | solo read |
 
 ## Conclusión
@@ -111,6 +117,6 @@ curl -s -X POST http://localhost:30010/api/auth/login \
 - **Lectura:** ✅ sysadmin y manager pueden listar usuarios del AD
 - **Creación:** ❌ El service account `svc_egi_ldap` no tiene permisos de escritura en AD
 - **Login:** ✅ Autenticación LDAP funciona correctamente
-- **Listado de roles:** ✅ Los 5 grupos de app están creados y asignados correctamente
+- **Listado de roles:** ✅ Los 11 grupos de app (con sufijo por laboratorio) están creados y asignados correctamente
 
 Para habilitar creación de usuarios desde la app, habría que delegar permisos de escritura en el AD a `svc_egi_ldap` (no es necesario para el proyecto).

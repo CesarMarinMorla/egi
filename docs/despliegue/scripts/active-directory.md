@@ -28,7 +28,7 @@ Si dice otra cosa, actualizar `LDAP_SEARCH_BASE` y `LDAP_BIND_DN` en `k8s/backen
 
 ## 2. Crear los grupos requeridos
 
-La app espera estos nombres de grupo **exactos**. Si tienen otro nombre, el usuario queda con rol `readonly`.
+La app espera estos nombres de grupo base. Si un grupo tiene sufijo de laboratorio (ej. `GRP_Editor_Lab101`), igual se mapea al rol `editor`. Si no coincide con ningún grupo conocido, el usuario queda con rol `readonly`.
 
 En **Active Directory Users and Computers → tu OU o CN=Users → New → Group**:
 
@@ -36,9 +36,15 @@ En **Active Directory Users and Computers → tu OU o CN=Users → New → Group
 |---|---|---|
 | `GRP_Sysadmin` | sysadmin | Administradores del sistema |
 | `GRP_Manager` | manager | Gestores de laboratorio |
-| `GRP_Editor` | editor | Editores de inventario |
-| `GRP_Operator` | operator | Operadores |
-| `GRP_ReadOnly` | readonly | Solo lectura |
+| `GRP_Editor_Lab101` | editor | Editores Lab 101 |
+| `GRP_Editor_Lab102` | editor | Editores Lab 102 |
+| `GRP_Editor_Lab201` | editor | Editores Lab 201 |
+| `GRP_Operator_Lab101` | operator | Operadores Lab 101 |
+| `GRP_Operator_Lab102` | operator | Operadores Lab 102 |
+| `GRP_Operator_Lab201` | operator | Operadores Lab 201 |
+| `GRP_ReadOnly_Lab101` | readonly | Solo lectura Lab 101 |
+| `GRP_ReadOnly_Lab102` | readonly | Solo lectura Lab 102 |
+| `GRP_ReadOnly_Lab201` | readonly | Solo lectura Lab 201 |
 
 Configuración de cada grupo:
 - **Group scope:** Global
@@ -47,11 +53,13 @@ Configuración de cada grupo:
 O en PowerShell:
 
 ```powershell
-$groups = @("GRP_Sysadmin","GRP_Manager","GRP_Editor","GRP_Operator","GRP_ReadOnly")
+$groups = @("GRP_Sysadmin","GRP_Manager","GRP_Editor_Lab101","GRP_Editor_Lab102","GRP_Editor_Lab201","GRP_Operator_Lab101","GRP_Operator_Lab102","GRP_Operator_Lab201","GRP_ReadOnly_Lab101","GRP_ReadOnly_Lab102","GRP_ReadOnly_Lab201")
 foreach ($g in $groups) {
     New-ADGroup -Name $g -GroupScope Global -GroupCategory Security
 }
 ```
+
+> Los grupos base (`GRP_Editor`, `GRP_Operator`, `GRP_ReadOnly`) se reemplazaron por variantes con sufijo de laboratorio. El mapeo a roles ignora el sufijo `_Lab*`, por lo que `GRP_Editor_Lab101` y `GRP_Editor_Lab102` ambos dan rol `editor`.
 
 ---
 
@@ -95,8 +103,10 @@ O en PowerShell:
 Add-ADGroupMember -Identity "GRP_Sysadmin" -Members "jperez"
 ```
 
-Un usuario solo necesita estar en **un grupo** — el primer match en este orden determina el rol:
-`GRP_Sysadmin` → `GRP_Manager` → `GRP_Editor` → `GRP_Operator` → `GRP_ReadOnly`
+Un usuario solo necesita estar en **un grupo** — el primer match (ignorando sufijos `_Lab*`) en este orden determina el rol:
+`GRP_Sysadmin` → `GRP_Manager` → `GRP_Editor*` → `GRP_Operator*` → `GRP_ReadOnly*`
+
+> Los labs se extraen de los grupos que contienen `Lab` en su nombre (ej. `GRP_Editor_Lab101` → el usuario pertenece a `Lab 101`).
 
 ---
 
@@ -119,6 +129,8 @@ nc -zv 192.168.1.10 389
 ```
 
 ---
+
+> **Nota:** el backend ahora busca usuarios dentro de `OU=EGI,{searchBase}` en `listUsers()`, tanto para listar como para la sincronización de grupos en `updateUser()`. Asegurate de que los usuarios a gestionar estén dentro de la OU `EGI`.
 
 ## 7. Valores finales para k8s/backend/secret.yaml
 
