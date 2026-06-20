@@ -65,6 +65,8 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 
 ### Próximo sprint (calidad)
 
+- [x] MachineDetail: usar `Promise.allSettled` para carga resiliente aunque falle una API
+- [x] MachineDetail: acortar mensaje de error sin acceso
 - [ ] Corregir typo en healthcheck docker-compose: `sqlservr` → `sqlservr`
 - [ ] Agregar confirmación en `FORCE_RESET` de bootstrap.mjs
 - [ ] Agregar `.nvmrc` con `20` en la raíz
