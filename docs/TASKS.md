@@ -57,8 +57,8 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 ### Próximo sprint (seguridad)
 
 - [ ] Rate limiting en `/api/auth/login` (express-rate-limit, auto-desactivado en mock)
-- [ ] MongoDB auth en docker-compose (init script + credenciales)
-- [ ] Sincronizar `docs/seguridad.md` con cambios ya aplicados
+- [x] MongoDB auth en docker-compose (init script + credenciales)
+- [x] Sincronizar `docs/seguridad.md` con cambios ya aplicados
 
 ### Próximo sprint (calidad)
 
@@ -76,9 +76,9 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 
 - [ ] pfSense NAT reflection para acceso desde host Windows
 - [ ] HTTPS (TLS termination en pfSense o nginx)
-- [ ] MongoDB auth + TLS en el cluster
+- [x] MongoDB auth en el cluster
 - [ ] CSRF protection (evaluar si aplica con Bearer tokens)
-- [ ] Documentar configuración de MongoDB en producción
+- [x] Documentar configuración de MongoDB en producción
 
 ## Información confirmada
 

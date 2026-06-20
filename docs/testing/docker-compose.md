@@ -34,7 +34,7 @@ docker run -d --name inventario-backend \
   -e SQL_PASSWORD=Mysql123 \
   -e SQL_DATABASE=inventario_itu \
   -e SQL_ENCRYPT=false \
-  -e MONGO_URI=mongodb://inventario-mongodb:27017 \
+  -e MONGO_URI=mongodb://egi_user:EgiMongo2026!@inventario-mongodb:27017/inventario_itu?authSource=admin \
   -e MONGO_DB_NAME=inventario \
   inventario-backend:latest
 

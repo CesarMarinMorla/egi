@@ -138,7 +138,7 @@ Credenciales por defecto (definidas en `backend/.env` y en `docker-compose.yml`)
 | SQL Server | `localhost:1433` |
 | SQL User | `sa` |
 | SQL Password | `Mysql123` |
-| MongoDB | `mongodb://localhost:27017` |
+| MongoDB | `mongodb://egi_user:EgiMongo2026!@localhost:27017/inventario_itu?authSource=admin` |
 
 Para detener las bases de datos:
 

@@ -53,7 +53,7 @@ Las soluciones marcadas pueden estorbar el testing manual o automatizado si no s
 | 13  | **Alto**    | ⚠️ Conexión LDAP sin TLS (`ldap://`)         | `ldapClient.ts:60` — credenciales viajan en texto plano hacia AD real | Usar `ldaps://` con certificado válido                                       |
 | 14  | **Alto**    | ⚠️ Sin HTTPS en backend                      | `server.ts:46` — todo viaja en texto plano                        | Terminar TLS en pfSense (WAF) o en un reverse proxy (nginx)                  |
 | 15  | **Medio**   | ⚠️ SQL Server sin conexión cifrada            | `config.ts:33-34` — `encrypt: false`, `trustServerCertificate: true` | Forzar `SQL_ENCRYPT=true` y `SQL_TRUST_SERVER_CERTIFICATE=false`             |
-| 16  | **Medio**   | ⚠️ MongoDB sin autenticación ni TLS           | `mongoClient.ts:11` — conexión anónima                            | Configurar auth en MongoDB y usar `mongodb://user:pass@host:27017/?tls=true` |
+| 16  | **Medio**   | ✅ MongoDB con autenticación habilitada       | `k8s/mongo/deployment.yaml` — `--auth` + credenciales             | Activado con `egi_user` via `MONGO_INITDB_ROOT_USERNAME/PASSWORD` |
 
 ### 2.2 Gestión de secretos
 
