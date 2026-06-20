@@ -19,6 +19,12 @@ spec:
         - name: mongo
           image: mongo:4.4
           imagePullPolicy: IfNotPresent
+          args: ["--auth"]
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "egi_user"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: "EgiMongo2026!"
           ports:
             - containerPort: 27017
               name: mongo
