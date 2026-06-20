@@ -24,7 +24,7 @@ catch {
 Write-Host ""
 
 Write-Host "2. Crear grupos requeridos" -ForegroundColor Green
-$groups = @("GRP_Sysadmin", "GRP_Manager", "GRP_Editor", "GRP_Operator", "GRP_ReadOnly")
+$groups = @("GRP_Sysadmin", "GRP_Manager", "GRP_Editor_Lab101", "GRP_Editor_Lab102", "GRP_Editor_Lab201", "GRP_Operator_Lab101", "GRP_Operator_Lab102", "GRP_Operator_Lab201", "GRP_ReadOnly_Lab101", "GRP_ReadOnly_Lab102", "GRP_ReadOnly_Lab201")
 Write-Host "   Grupos a crear: $($groups -join ', ')"
 Write-Host "   Script:"
 $groupScript = @"

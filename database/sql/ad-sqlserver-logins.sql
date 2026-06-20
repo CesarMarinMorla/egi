@@ -1,58 +1,107 @@
 USE master;
 GO
 
--- Crear logins de Windows desde los grupos de AD (solo si no existen)
+-- Logins de grupos genéricos
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Sysadmin')
     CREATE LOGIN [ITU\GRP_Sysadmin] FROM WINDOWS;
 
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Manager')
     CREATE LOGIN [ITU\GRP_Manager] FROM WINDOWS;
 
-IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Editor')
-    CREATE LOGIN [ITU\GRP_Editor] FROM WINDOWS;
+-- Logins de grupos con sufijo de laboratorio
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Editor_Lab101')
+    CREATE LOGIN [ITU\GRP_Editor_Lab101] FROM WINDOWS;
 
-IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Operator')
-    CREATE LOGIN [ITU\GRP_Operator] FROM WINDOWS;
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Editor_Lab102')
+    CREATE LOGIN [ITU\GRP_Editor_Lab102] FROM WINDOWS;
 
-IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_ReadOnly')
-    CREATE LOGIN [ITU\GRP_ReadOnly] FROM WINDOWS;
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Editor_Lab201')
+    CREATE LOGIN [ITU\GRP_Editor_Lab201] FROM WINDOWS;
+
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Operator_Lab101')
+    CREATE LOGIN [ITU\GRP_Operator_Lab101] FROM WINDOWS;
+
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Operator_Lab102')
+    CREATE LOGIN [ITU\GRP_Operator_Lab102] FROM WINDOWS;
+
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_Operator_Lab201')
+    CREATE LOGIN [ITU\GRP_Operator_Lab201] FROM WINDOWS;
+
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_ReadOnly_Lab101')
+    CREATE LOGIN [ITU\GRP_ReadOnly_Lab101] FROM WINDOWS;
+
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_ReadOnly_Lab102')
+    CREATE LOGIN [ITU\GRP_ReadOnly_Lab102] FROM WINDOWS;
+
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'ITU\GRP_ReadOnly_Lab201')
+    CREATE LOGIN [ITU\GRP_ReadOnly_Lab201] FROM WINDOWS;
 GO
 
 USE inventario_itu;
 GO
 
--- Crear usuarios en la base (solo si no existen)
+-- Usuarios de grupos genéricos
 IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Sysadmin')
     CREATE USER [ITU\GRP_Sysadmin] FOR LOGIN [ITU\GRP_Sysadmin];
 
 IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Manager')
     CREATE USER [ITU\GRP_Manager] FOR LOGIN [ITU\GRP_Manager];
 
-IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Editor')
-    CREATE USER [ITU\GRP_Editor] FOR LOGIN [ITU\GRP_Editor];
+-- Usuarios de grupos con sufijo de laboratorio
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Editor_Lab101')
+    CREATE USER [ITU\GRP_Editor_Lab101] FOR LOGIN [ITU\GRP_Editor_Lab101];
 
-IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Operator')
-    CREATE USER [ITU\GRP_Operator] FOR LOGIN [ITU\GRP_Operator];
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Editor_Lab102')
+    CREATE USER [ITU\GRP_Editor_Lab102] FOR LOGIN [ITU\GRP_Editor_Lab102];
 
-IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_ReadOnly')
-    CREATE USER [ITU\GRP_ReadOnly] FOR LOGIN [ITU\GRP_ReadOnly];
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Editor_Lab201')
+    CREATE USER [ITU\GRP_Editor_Lab201] FOR LOGIN [ITU\GRP_Editor_Lab201];
+
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Operator_Lab101')
+    CREATE USER [ITU\GRP_Operator_Lab101] FOR LOGIN [ITU\GRP_Operator_Lab101];
+
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Operator_Lab102')
+    CREATE USER [ITU\GRP_Operator_Lab102] FOR LOGIN [ITU\GRP_Operator_Lab102];
+
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_Operator_Lab201')
+    CREATE USER [ITU\GRP_Operator_Lab201] FOR LOGIN [ITU\GRP_Operator_Lab201];
+
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_ReadOnly_Lab101')
+    CREATE USER [ITU\GRP_ReadOnly_Lab101] FOR LOGIN [ITU\GRP_ReadOnly_Lab101];
+
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_ReadOnly_Lab102')
+    CREATE USER [ITU\GRP_ReadOnly_Lab102] FOR LOGIN [ITU\GRP_ReadOnly_Lab102];
+
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'ITU\GRP_ReadOnly_Lab201')
+    CREATE USER [ITU\GRP_ReadOnly_Lab201] FOR LOGIN [ITU\GRP_ReadOnly_Lab201];
 GO
 
--- Asignar permisos según grupo
+-- Permisos grupos genéricos
 ALTER ROLE db_owner ADD MEMBER [ITU\GRP_Sysadmin];
-
--- Manager: leer y escribir
 ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_Manager];
 ALTER ROLE db_datawriter ADD MEMBER [ITU\GRP_Manager];
+GO
 
--- Editor: leer y escribir
-ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_Editor];
-ALTER ROLE db_datawriter ADD MEMBER [ITU\GRP_Editor];
+-- Permisos grupos Editor
+ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_Editor_Lab101];
+ALTER ROLE db_datawriter ADD MEMBER [ITU\GRP_Editor_Lab101];
+ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_Editor_Lab102];
+ALTER ROLE db_datawriter ADD MEMBER [ITU\GRP_Editor_Lab102];
+ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_Editor_Lab201];
+ALTER ROLE db_datawriter ADD MEMBER [ITU\GRP_Editor_Lab201];
+GO
 
--- Operator: leer y escribir
-ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_Operator];
-ALTER ROLE db_datawriter ADD MEMBER [ITU\GRP_Operator];
+-- Permisos grupos Operator
+ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_Operator_Lab101];
+ALTER ROLE db_datawriter ADD MEMBER [ITU\GRP_Operator_Lab101];
+ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_Operator_Lab102];
+ALTER ROLE db_datawriter ADD MEMBER [ITU\GRP_Operator_Lab102];
+ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_Operator_Lab201];
+ALTER ROLE db_datawriter ADD MEMBER [ITU\GRP_Operator_Lab201];
+GO
 
--- ReadOnly: solo leer
-ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_ReadOnly];
+-- Permisos grupos ReadOnly
+ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_ReadOnly_Lab101];
+ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_ReadOnly_Lab102];
+ALTER ROLE db_datareader ADD MEMBER [ITU\GRP_ReadOnly_Lab201];
 GO
