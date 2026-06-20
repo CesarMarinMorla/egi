@@ -28,7 +28,7 @@ Si dice otra cosa, actualizar `LDAP_SEARCH_BASE` y `LDAP_BIND_DN` en `k8s/backen
 
 ## 2. Crear los grupos requeridos
 
-La app espera estos nombres de grupo **exactos**. Si tienen otro nombre, el usuario queda con rol `readonly`.
+La app espera estos nombres de grupo base. Si un grupo tiene sufijo de laboratorio (ej. `GRP_Editor_Lab101`), igual se mapea al rol `editor`. Si no coincide con ningún grupo conocido, el usuario queda con rol `readonly`.
 
 En **Active Directory Users and Computers → tu OU o CN=Users → New → Group**:
 
@@ -95,8 +95,10 @@ O en PowerShell:
 Add-ADGroupMember -Identity "GRP_Sysadmin" -Members "jperez"
 ```
 
-Un usuario solo necesita estar en **un grupo** — el primer match en este orden determina el rol:
+Un usuario solo necesita estar en **un grupo** — el primer match (ignorando sufijos `_Lab*`) en este orden determina el rol:
 `GRP_Sysadmin` → `GRP_Manager` → `GRP_Editor` → `GRP_Operator` → `GRP_ReadOnly`
+
+> Los labs se extraen de los grupos que contienen `Lab` en su nombre (ej. `GRP_Editor_Lab101` → el usuario pertenece a `Lab 101`).
 
 ---
 
