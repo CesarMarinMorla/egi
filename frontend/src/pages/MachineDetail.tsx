@@ -49,7 +49,10 @@ export default function MachineDetail() {
 			}, 0);
 
 			try {
-				const [machineData, hardwareData, usersData] = await Promise.all([getMachine(machineId), getHardware(machineId), getAdUsers()]);
+				const [machineResult, hardwareResult, usersResult] = await Promise.allSettled([getMachine(machineId), getHardware(machineId), getAdUsers()]);
+				const machineData = machineResult.status === "fulfilled" ? machineResult.value : null;
+				const hardwareData = hardwareResult.status === "fulfilled" ? hardwareResult.value : null;
+				const usersData = usersResult.status === "fulfilled" ? usersResult.value : [];
 
 				clearTimeout(timeoutId);
 
@@ -130,7 +133,7 @@ export default function MachineDetail() {
 	if (forbidden) {
 		return (
 			<section className="page">
-				<p className="form-error">No tenés permiso para ver esta máquina.</p>
+				<p className="form-error">Sin acceso a esta máquina.</p>
 				<Link to="/" className="btn btn-secondary">
 					Volver al inventario
 				</Link>
