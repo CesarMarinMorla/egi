@@ -42,12 +42,13 @@ function mapAdGroupToRole(groups: string[]): UserRole {
 	};
 
 	for (const group of groups) {
-		const match = group.match(/^CN=([^,]+)/i);
-		const groupName = match ? match[1] : group;
-		if (groupMap[groupName]) {
-			return groupMap[groupName];
-		}
-	}
+                const match = group.match(/^CN=([^,]+)/i);
+                const groupName = match ? match[1] : group;
+                const baseGroupName = groupName.replace(/_Lab\d+$/i, "");
+                if (groupMap[baseGroupName]) {
+                        return groupMap[baseGroupName];
+                }
+        }
 
 	return "readonly"; // Default role
 }
@@ -109,8 +110,8 @@ export async function createLdapClient(): Promise<ILdapClient> {
 				const labs = memberOf
 					.filter((group: string) => group.includes("Lab"))
 					.map((group: string) => {
-						const match = group.match(/Lab\s*\d+/i);
-						return match ? match[0] : "";
+						const match = group.match(/Lab\s*(\d+)/i);
+						return match ? `Lab ${match[1]}` : "";
 					})
 					.filter(Boolean);
 

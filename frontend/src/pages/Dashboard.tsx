@@ -23,10 +23,10 @@ export default function Dashboard() {
 			setError(null);
 
 			try {
-				const [data, usersData] = await Promise.all([getMachines(), getAdUsers()]);
+				const [data, usersData] = await Promise.allSettled([getMachines(), getAdUsers()]);
 				if (!cancelled) {
-					setMachines(data);
-					setUsers(usersData);
+					if (data.status === "fulfilled") setMachines(data.value);
+                                        if (usersData.status === "fulfilled") setUsers(usersData.value);
 				}
 			} catch (err) {
 				if (!cancelled) {
