@@ -211,10 +211,8 @@ export async function createLdapClient(): Promise<ILdapClient> {
 			await client.bind(bindDn, bindPassword);
 
 			const cn = input.displayName || input.username;
-			const dn = `CN=${cn},CN=Users,${searchBase}`;
+			const dn = `CN=${cn},OU=EGI,${searchBase}`;
 
-			const password = input.password ?? "Changeme1!";
-			const encodedPassword = Buffer.from(`"${password}"`, "utf16le");
 
 			await client.add(dn, {
 				objectClass: ["top", "person", "organizationalPerson", "user"],
@@ -223,13 +221,12 @@ export async function createLdapClient(): Promise<ILdapClient> {
 				userPrincipalName: `${input.username}@${searchBase.replace(/DC=/gi, "").replace(/,/g, ".")}`,
 				displayName: input.displayName,
 				mail: input.email,
-				unicodePwd: encodedPassword.toString("base64"),
-				userAccountControl: "512",
+				userAccountControl: "514",
 			});
 
 			for (const group of input.groups) {
 				try {
-					await client.modify(`CN=${group},CN=Users,${searchBase}`, [
+					await client.modify(`CN=${group},OU=EGI,${searchBase}`, [
 						new Change({ operation: "add", modification: new Attribute({ type: "member", values: [dn] }) }),
 					]);
 				} catch {
@@ -253,8 +250,8 @@ export async function createLdapClient(): Promise<ILdapClient> {
 				new Change({ operation: "replace", modification: new Attribute({ type: "userAccountControl", values: [input.enabled ? "512" : "514"] }) }),
 			];
 
-			if (input.password) {
-				const encodedPassword = Buffer.from(`"${input.password}"`, "utf16le");
+			const encodedPassword = input.password ? Buffer.from(`"${input.password}"`, "utf16le") : null;
+				if (input.password && encodedPassword) {
 				modifications.push(new Change({ operation: "replace", modification: new Attribute({ type: "unicodePwd", values: [encodedPassword.toString("base64")] }) }));
 			}
 
