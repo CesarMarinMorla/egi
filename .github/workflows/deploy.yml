@@ -1,5 +1,9 @@
 name: Deploy
 
+# ATENCIÓN: No usar `if: ${{ secrets.* }}` en este workflow 
+# si el secret no existe en el repo — GitHub Actions rechaza 
+# el workflow al instante con 0 jobs.
+
 on:
   push:
     branches: [main]
