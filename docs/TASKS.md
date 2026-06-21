@@ -1,6 +1,6 @@
 # Seguimiento de tareas
 
-## 1. 🟢 Listo — Infraestructura base
+## 1. Listo — Infraestructura base
 
 - [x] pfSense: regla NAT (puerto 80 → `192.168.1.50:30080`)
 - [x] VM Linux con Minikube, Docker, Calico, iptables persistence
@@ -13,7 +13,7 @@
 - [x] Frontend accesible desde AD (`192.168.1.10`) y Lubuntu (`192.168.1.x`)
 - [x] Conectividad AD verificada — ping, puertos 389 y 636 funcionan
 
-## 2. 🟡 Listo — Seguridad aplicada (commits en `develop`)
+## 2. Listo — Seguridad aplicada (commits en `develop`)
 
 Estos cambios están commiteados en `develop` y ya pueden deployarse manualmente en el cluster:
 
@@ -31,21 +31,21 @@ Estos cambios están commiteados en `develop` y ya pueden deployarse manualmente
 - [x] Docker Compose: sin password default, puertos bindeados a `127.0.0.1`
 - [x] `.env.example` completo con todas las variables
 
-## 3. 🟢 Roadblocks resueltos
+## 3. Roadblocks resueltos
 
 - [x] **SQL Server** (`ITUSRV002 / 192.168.1.20:1433`) — ping, puerto 1433, DB `inventario_itu`, tabla `machines` y seed data (12 registros) verificados
 - [x] **Active Directory** — bind credentials configurados en secret, autenticación real funcionando
 
 Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 
-## 4. ⏳ Pendiente — No bloquea setup inicial
+## 4. Pendiente — No bloquea setup inicial
 
 ### Próximo paso
 
 - [x] **Merge `develop` → `main`** — completado
 - [x] **Deploy core + seed separados** — `k8s/deploy-core.sh` + `k8s/seed-data.sh`
 - [x] **MongoDB bootstrap automático** — Job idempotente `k8s/mongo/seed-job.yaml` + Network Policies
-- [x] **Deploy manual desde `main` con modo real** — minikube delete → start → deploy-core → seed-data ✅ verificado
+- [x] **Deploy manual desde `main` con modo real** — minikube delete → start → deploy-core → seed-data verificado
 - [x] **Pruebas de gestión de usuarios (modo real)** — login sysadmin, listar 20 usuarios AD, crear usuario (falla por permisos AD, documentado en `docs/testing/pruebas-usuarios.md`)
 - [x] **Grupos AD con sufijo por laboratorio** — `GRP_Editor_Lab101`, `GRP_Operator_Lab102`, etc. con validación frontend actualizada
 - [x] **Sincronización de grupos en updateUser** — remueve al usuario de grupos viejos y lo agrega a los nuevos al editar
@@ -61,6 +61,9 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 
 ### Próximo sprint (seguridad)
 
+- [ ] Leer `docs/revision-produccion.md` — prioridades pendientes para el próximo deploy
+- [ ] Revisar `docs/seguridad.md` — estado completo de seguridad y hoja de ruta
+- [ ] Revisar `docs/issues-deploy-github-actions.md` — issues del pipeline CI/CD
 - [ ] Rate limiting en `/api/auth/login` (express-rate-limit, auto-desactivado en mock)
 - [x] MongoDB auth en docker-compose (init script + credenciales)
 - [x] Sincronizar `docs/seguridad.md` con cambios ya aplicados
@@ -79,7 +82,7 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 - [ ] Política de rate limiting para producción
 - [ ] Estándar de contraseñas para servicios
 
-## 5. 🔵 Producción (post-setup)
+## 5. Producción (post-setup)
 
 - [ ] pfSense NAT reflection para acceso desde host Windows
 - [ ] HTTPS (TLS termination en pfSense o nginx)
@@ -92,4 +95,4 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 - [x] **Dominio AD:** `itu.local`
 - [x] **Atributo de login LDAP:** `sAMAccountName`
 - [x] **Usuario de servicio bind LDAP:** `CN=svc_egi_ldap,OU=EGI,DC=itu,DC=local` / `EgiLdap2026!`
-- [ ] **HTTPS:** pendiente de confirmar si el examen lo requiere
+- [ ] **HTTPS:** opcional

@@ -24,25 +24,25 @@ docker build -t inventario-web:latest frontend/
 
 # 4. Backend container
 docker run -d --name inventario-backend \
-  --network egi_default \
-  -e PORT=3001 \
-  -e JWT_SECRET=dev-secret-change-me \
-  -e MOCK_MODE=false \
-  -e SQL_SERVER=inventario-sqlserver \
-  -e SQL_PORT=1433 \
-  -e SQL_USER=sa \
-  -e SQL_PASSWORD=Mysql123 \
-  -e SQL_DATABASE=inventario_itu \
-  -e SQL_ENCRYPT=false \
-  -e MONGO_URI=mongodb://egi_user:EgiMongo2026!@inventario-mongodb:27017/inventario_itu?authSource=admin \
-  -e MONGO_DB_NAME=inventario \
-  inventario-backend:latest
+ --network egi_default \
+ -e PORT=3001 \
+ -e JWT_SECRET=dev-secret-change-me \
+ -e MOCK_MODE=false \
+ -e SQL_SERVER=inventario-sqlserver \
+ -e SQL_PORT=1433 \
+ -e SQL_USER=sa \
+ -e SQL_PASSWORD=Mysql123 \
+ -e SQL_DATABASE=inventario_itu \
+ -e SQL_ENCRYPT=false \
+ -e MONGO_URI=mongodb://egi_user:EgiMongo2026!@inventario-mongodb:27017/inventario_itu?authSource=admin \
+ -e MONGO_DB_NAME=inventario \
+ inventario-backend:latest
 
 # 5. Frontend container
 docker run -d --name inventario-web \
-  --network egi_default \
-  -p 30080:80 \
-  inventario-web:latest
+ --network egi_default \
+ -p 30080:80 \
+ inventario-web:latest
 
 # 6. Verificar
 curl http://localhost:3001/health
@@ -72,28 +72,28 @@ npm run dev
 
 ```mermaid
 flowchart TB
-    subgraph Host["Docker Host"]
-        direction TB
+ subgraph Host["Docker Host"]
+ direction TB
 
-        subgraph Compose["Docker Compose (infra)"]
-            SQL["Container: inventario-sqlserver<br/>Azure SQL Edge :1433"]
-            MONGO["Container: inventario-mongodb<br/>MongoDB 7 :27017"]
-        end
+ subgraph Compose["Docker Compose (infra)"]
+ SQL["Container: inventario-sqlserver<br/>Azure SQL Edge:1433"]
+ MONGO["Container: inventario-mongodb<br/>MongoDB 7:27017"]
+ end
 
-        subgraph App["App Containers (docker build)"]
-            WEB["Container: inventario-web<br/>Nginx :80 → :30080"]
-            BE["Container: inventario-backend<br/>Node.js :3001"]
-        end
+ subgraph App["App Containers (docker build)"]
+ WEB["Container: inventario-web<br/>Nginx:80 →:30080"]
+ BE["Container: inventario-backend<br/>Node.js:3001"]
+ end
 
-        BEVOL["Volume: sqlserver-data"] -.-> SQL
-        MONVOL["Volume: mongodb-data"] -.-> MONGO
-    end
+ BEVOL["Volume: sqlserver-data"] -.-> SQL
+ MONVOL["Volume: mongodb-data"] -.-> MONGO
+ end
 
-    USER(["User"])
-    USER -->|":30080"| WEB
-    WEB -->|"/api/* → :3001"| BE
-    BE -->|"MOCK_MODE=false"| SQL
-    BE --> MONGO
+ USER(["User"])
+ USER -->|":30080"| WEB
+ WEB -->|"/api/* →:3001"| BE
+ BE -->|"MOCK_MODE=false"| SQL
+ BE --> MONGO
 ```
 
 ## Variables de entorno
@@ -116,13 +116,13 @@ El frontend usa `VITE_USE_MOCK=false` en `.env.development`.
 
 ## Persistencia
 
-| Dato            | Backend                 | Notas                                            |
+| Dato | Backend | Notas |
 | --------------- | ----------------------- | ------------------------------------------------ |
-| Máquinas        | SQL Server (`machines`) | Siempre real con `MOCK_MODE=false`               |
-| Hardware        | MongoDB (`hardware`)    | Real via `mongoClient.ts` (wired en `server.ts`) |
-| Usuarios / Auth | Mock (en memoria)       | El cliente LDAP existe pero no está conectado. ⚠️ En Minikube/K8s, LDAP **sí** se conecta al AD real (`192.168.1.10:389`) |
+| Máquinas | SQL Server (`machines`) | Siempre real con `MOCK_MODE=false` |
+| Hardware | MongoDB (`hardware`) | Real via `mongoClient.ts` (wired en `server.ts`) |
+| Usuarios / Auth | Mock (en memoria) | El cliente LDAP existe pero no está conectado. En Minikube/K8s, LDAP **sí** se conecta al AD real (`192.168.1.10:389`) |
 
-> ⚠️ **Nota sobre modos:** Este documento describe el entorno Docker Compose local. En el despliegue Minikube/K8s, el backend corre con `MOCK_MODE=false` y se conecta a SQL Server VM (`192.168.1.20:1433`), MongoDB in-cluster y AD real (`192.168.1.10:389`).
+> **Nota sobre modos:** Este documento describe el entorno Docker Compose local. En el despliegue Minikube/K8s, el backend corre con `MOCK_MODE=false` y se conecta a SQL Server VM (`192.168.1.20:1433`), MongoDB in-cluster y AD real (`192.168.1.10:389`).
 
 El backend arranca en **mock mode** (`MOCK_MODE=true`) por defecto — todo usa arreglos en memoria. Con `MOCK_MODE=false` usa SQL Server y MongoDB reales.
 

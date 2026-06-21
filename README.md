@@ -1,14 +1,20 @@
-# Inventario IT — Universidad
+# Inventario ITU
 
-Sistema centralizado de gestión de activos IT para los laboratorios de informática de la universidad.
+**Instituto Tecnológico Universitario** — **Universidad Nacional de Cuyo**
 
-## Stack
+Proyecto integrador correspondiente a las asignaturas Sistemas Operativos: Linux,
+Sistemas Operativos: Windows, Computación en la Nube y Bases de Datos Avanzadas.
+
+Sistema centralizado de gestión de activos IT para los laboratorios de informática
+del Instituto Tecnológico Universitario.
+
+## Stack tecnológico
 
 | Capa | Tecnología |
 |------|-----------|
 | **Frontend** | React 19 + TypeScript + Vite + React Router |
 | **Backend** | Node.js + Express 5 + TypeScript |
-| **DB documental** | MongoDB 7 |
+| **DB documental** | MongoDB 4.4 (prod) / 7 (dev) |
 | **DB relacional** | SQL Server (VM dedicada) |
 | **Autenticación** | Active Directory (VM dedicada) |
 | **Container** | Docker + Docker Compose |
@@ -45,6 +51,10 @@ app.ts → server.ts → routes → controllers → services → repositories
 
 El backend sigue una arquitectura en capas (similar a Spring Boot) con **dependency injection manual**. Cada capa solo conoce a la inmediata inferior. Los repositorios se definen por interfaz para poder switchear entre mock y real sin tocar servicios.
 
+El frontend valida toda la entrada de usuario con schemas de [Zod](https://zod.dev/), sanitiza contra XSS y verifica la sesión JWT almacenada en localStorage antes de usarla.
+
+Documentación adicional: [Seguridad](docs/seguridad.md) · [TASKS](docs/TASKS.md) · [Revisión de producción](docs/revision-produccion.md)
+
 ## Estructura del proyecto
 
 ```
@@ -57,7 +67,8 @@ inventario-itu/
 │   │   ├── context/          # AuthContext
 │   │   ├── hooks/            # Custom hooks (usePermissions)
 │   │   ├── services/         # API client + mocks frontend
-│   │   └── types/            # Tipos compartidos
+│   │   ├── types/            # Tipos compartidos
+│   │   └── utils/            # Validación Zod, sanitización XSS, formatos
 │   ├── Dockerfile
 │   └── nginx.conf
 ├── backend/
@@ -76,7 +87,7 @@ inventario-itu/
 └── docs/
 ```
 
-## Prerequisitos
+## Prerrequisitos
 
 - Node.js 20+
 - Docker + Colima (o Docker Desktop)
@@ -110,7 +121,7 @@ npm run dev
 
 ### 2. Modo real con Docker (SQL Server + MongoDB)
 
-Requiere las bases de datos corriendo via Docker Compose:
+Requiere las bases de datos corriendo vía Docker Compose:
 
 ```bash
 # 1. Levantar SQL Server + MongoDB
@@ -170,7 +181,7 @@ El deploy se divide en dos fases:
 
 | Fase | Script | Qué hace |
 |------|--------|----------|
-| **Core** | `k8s/deploy-core.sh` | Namespace → MongoDB → Backend → Frontend → Network Policies → iptables → smoke test |
+| **Core** | `k8s/deploy-core.sh` | Namespace -> MongoDB -> Backend -> Frontend -> Network Policies -> iptables -> smoke test |
 | **Seed** | `k8s/seed-data.sh` | SQL bootstrap (externo) + MongoDB Job idempotente (ConfigMap + Job) |
 
 El Job de MongoDB (`k8s/mongo/seed-job.yaml`) es idempotente: si la colección `hardware` ya tiene documentos, salta el seed.
@@ -194,7 +205,7 @@ sleep 1
 curl http://localhost:30010/health
 kill %1 2>/dev/null
 ```
-→ `{"status":"ok","mockMode":false}` ✅ Verificado
+→ `{"status":"ok","mockMode":false}` Verificado
 
 ### Login de prueba (mock — dev local)
 
@@ -240,8 +251,11 @@ Ver `k8s/` para manifiestos de Kubernetes y `k8s/deploy-local.sh` para deploy lo
 
 El pipeline de CI/CD (`.github/workflows/`) automatiza:
 - **CI**: lint + typecheck + build en cada PR a `main`/`develop`
-- **CD**: build de imágenes → push a GHCR → `kubectl apply` → smoke test en push a `main`
+- **CD**: build de imágenes -> push a GHCR -> `kubectl apply` -> smoke test en push a `main`
 
 ## Contribuidores
 
-- **Maxi** — `lopez.maximiliano@uncuyo.edu.ar`
+- Cesar Marin
+- Maximiliano Lopez
+- Franco Rossi
+- Micaela Becerra

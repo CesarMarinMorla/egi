@@ -41,25 +41,25 @@ bash k8s/deploy-local.sh
 
 ```bash
 kubectl get pods -n inventario-itu
-# NAME                                  READY   STATUS    RESTARTS   AGE
-# inventario-backend-7864fbff4f-q8gcw   1/1     Running   0          87s
-# inventario-db-65798c85c5-7qbxb        1/1     Running   0          88s
-# inventario-web-57f79d7756-4rbph       1/1     Running   0          87s
+# NAME READY STATUS RESTARTS AGE
+# inventario-backend-7864fbff4f-q8gcw 1/1 Running 0 87s
+# inventario-db-65798c85c5-7qbxb 1/1 Running 0 88s
+# inventario-web-57f79d7756-4rbph 1/1 Running 0 87s
 
 kubectl get svc -n inventario-itu
-# NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)
-# inventario-backend   ClusterIP   10.99.224.254   <none>        3001/TCP
-# inventario-db        ClusterIP   10.96.96.246    <none>        27017/TCP
-# inventario-web       NodePort    10.96.72.235    <none>        80:30080/TCP
+# NAME TYPE CLUSTER-IP EXTERNAL-IP PORT(S)
+# inventario-backend ClusterIP 10.99.224.254 <none> 3001/TCP
+# inventario-db ClusterIP 10.96.96.246 <none> 27017/TCP
+# inventario-web NodePort 10.96.72.235 <none> 80:30080/TCP
 ```
 
 ## Persistencia
 
-| Dato            | Backend                 | K8s                                 |
+| Dato | Backend | K8s |
 | --------------- | ----------------------- | ----------------------------------- |
-| Máquinas        | SQL Server (`machines`) | `192.168.1.20:1433` (VMs reales)    |
-| Hardware        | MongoDB (`hardware`)    | `inventario-db:27017` con auth (`egi_user`) (dentro del cluster) |
-| Usuarios / Auth | AD (`192.168.1.10:389`) | AD (`192.168.1.10:389`)             |
+| Máquinas | SQL Server (`machines`) | `192.168.1.20:1433` (VMs reales) |
+| Hardware | MongoDB (`hardware`) | `inventario-db:27017` con auth (`egi_user`) (dentro del cluster) |
+| Usuarios / Auth | AD (`192.168.1.10:389`) | AD (`192.168.1.10:389`) |
 
 > El Secret tiene `MOCK_MODE: "false"` y está verificado funcionando. Para probar solo localmente sin las VMs, cambiarlo a `MOCK_MODE: "true"` y comentar las configs de SQL, MongoDB y LDAP.
 
@@ -70,15 +70,15 @@ Minikube con driver `docker` aísla el cluster en una red interna (`192.168.49.0
 El script `deploy-local.sh` configura automáticamente una regla `iptables DNAT` en Linux para redirigir el tráfico desde la IP local de la máquina hacia el cluster:
 
 ```
-192.168.1.50:30080  ──DNAT──>  192.168.49.2:30080  ──NodePort──>  Pod nginx:80
+192.168.1.50:30080 ──DNAT──> 192.168.49.2:30080 ──NodePort──> Pod nginx:80
 ```
 
 Esto simula el NAT que haría pfSense en producción.
 
-| Plataforma | Acceso al frontend                     |
+| Plataforma | Acceso al frontend |
 | ---------- | -------------------------------------- |
-| Linux      | `http://192.168.1.50:30080`             |
-| macOS      | `kubectl port-forward -n inventario-itu svc/inventario-web 8080:80 --address=0.0.0.0` |
+| Linux | `http://192.168.1.50:30080` |
+| macOS | `kubectl port-forward -n inventario-itu svc/inventario-web 8080:80 --address=0.0.0.0` |
 
 > Sin `--address=0.0.0.0` el port-forward solo escucha en `127.0.0.1` y no es accesible desde otras máquinas de la red. Alternativa: `minikube tunnel &`
 
@@ -86,85 +86,85 @@ Para eliminar las reglas iptables manualmente:
 
 ```bash
 iptables -t nat -D PREROUTING -p tcp --dport 30080 \
-  -j DNAT --to-destination $(minikube ip):30080
+ -j DNAT --to-destination $(minikube ip):30080
 ```
 
 ## Notas
 
 - Las imágenes `inventario-web` e `inventario-backend` se construyen localmente en el daemon de Minikube (no están en ningún registry). `mongo:4.4` se pullea de Docker Hub.
-- El backend arranca en **modo real** (`MOCK_MODE=false`) y se conecta a SQL Server, MongoDB y AD en las VMs de la red local. ✅ Verificado — health endpoint responde `{"status":"ok","mockMode":false}`.
+- El backend arranca en **modo real** (`MOCK_MODE=false`) y se conecta a SQL Server, MongoDB y AD en las VMs de la red local. Verificado — health endpoint responde `{"status":"ok","mockMode":false}`.
 - El health check del backend está en `/health` (no `/api/health`).
 
 ## Arquitectura
 
 ```mermaid
 flowchart TB
-    subgraph External[" "]
-        User(["User"])
-        SQL[("SQL Server<br/>192.168.1.20:1433")]
-        AD[("Active Directory<br/>192.168.1.10:389")]
-    end
+ subgraph External[" "]
+ User(["User"])
+ SQL[("SQL Server<br/>192.168.1.20:1433")]
+ AD[("Active Directory<br/>192.168.1.10:389")]
+ end
 
-    subgraph FW["pfSense Firewall"]
-        direction TB
-        TLS["TLS termination<br/>443 → NodePort 30080"]
-        NAT["NAT / ACL<br/>solo cluster → VMs"]
-        WAF["WAF / rate limiting"]
-    end
+ subgraph FW["pfSense Firewall"]
+ direction TB
+ TLS["TLS termination<br/>443 → NodePort 30080"]
+ NAT["NAT / ACL<br/>solo cluster → VMs"]
+ WAF["WAF / rate limiting"]
+ end
 
-    subgraph Cluster["Minikube — inventario-itu"]
-        direction TB
+ subgraph Cluster["Minikube — inventario-itu"]
+ direction TB
 
-        subgraph Web["Frontend"]
-            WebSvc("Service<br/>NodePort 80:30080")
-            WebPod["Pod inventario-web<br/>port 80"]
-        end
+ subgraph Web["Frontend"]
+ WebSvc("Service<br/>NodePort 80:30080")
+ WebPod["Pod inventario-web<br/>port 80"]
+ end
 
-        subgraph Be["Backend"]
-            BeSvc("Service<br/>ClusterIP :3001")
-            BePod["Pod inventario-backend<br/>port 3001"]
-            BeSec{{"Secret<br/>JWT, mock-mode, SQL"}}
-        end
+ subgraph Be["Backend"]
+ BeSvc("Service<br/>ClusterIP:3001")
+ BePod["Pod inventario-backend<br/>port 3001"]
+ BeSec{{"Secret<br/>JWT, mock-mode, SQL"}}
+ end
 
-        subgraph Mongo["MongoDB"]
-            MongoSvc("Service<br/>ClusterIP :27017")
-            MongoPod["Pod inventario-db<br/>port 27017"]
-            MongoPvc["PVC 1Gi"]
-        end
+ subgraph Mongo["MongoDB"]
+ MongoSvc("Service<br/>ClusterIP:27017")
+ MongoPod["Pod inventario-db<br/>port 27017"]
+ MongoPvc["PVC 1Gi"]
+ end
 
-        subgraph NP["Network Policies"]
-            NP01["deny-all-default"]
-            NP02["allow-dns-egress"]
-            NP03["allow-ingress-web"]
-            NP04["allow-web-to-backend"]
-            NP05["allow-backend-to-mongo"]
-            NP06["allow-backend-egress-sql"]
-            NP07["allow-backend-egress-ad"]
-        end
-    end
+ subgraph NP["Network Policies"]
+ NP01["deny-all-default"]
+ NP02["allow-dns-egress"]
+ NP03["allow-ingress-web"]
+ NP04["allow-web-to-backend"]
+ NP05["allow-backend-to-mongo"]
+ NP06["allow-backend-egress-sql"]
+ NP07["allow-backend-egress-ad"]
+ end
+ end
 
-    User -->|":443 HTTPS"| TLS
-    TLS -->|":30080"| WebSvc
-    WebSvc --> WebPod
-    WebPod -->|":3001"| BeSvc
-    BeSvc --> BePod
-    BePod -->|":27017"| MongoSvc
-    MongoSvc --> MongoPod
-    MongoPod --> MongoPvc
-    BePod -.->|"egress :1433"| NAT
-    BePod -.->|"egress :389"| NAT
-    NAT -.->|":1433"| SQL
-    NAT -.->|":389"| AD
-    BePod -.- BeSec
+ User -->|":443 HTTPS"| TLS
+ TLS -->|":30080"| WebSvc
+ WebSvc --> WebPod
+ WebPod -->|":3001"| BeSvc
+ BeSvc --> BePod
+ BePod -->|":27017"| MongoSvc
+ MongoSvc --> MongoPod
+ MongoPod --> MongoPvc
+ BePod -.->|"egress:1433"| NAT
+ BePod -.->|"egress:389"| NAT
+ NAT -.->|":1433"| SQL
+ NAT -.->|":389"| AD
+ BePod -.- BeSec
 ```
 
 ## Servicios expuestos
 
-| Servicio | Tipo      | Puerto interno | NodePort |
+| Servicio | Tipo | Puerto interno | NodePort |
 | -------- | --------- | -------------- | -------- |
-| Frontend | NodePort  | `80`           | `30080`  |
-| Backend  | ClusterIP | `3001`         | —        |
-| MongoDB  | ClusterIP | `27017`        | —        |
+| Frontend | NodePort | `80` | `30080` |
+| Backend | ClusterIP | `3001` | — |
+| MongoDB | ClusterIP | `27017` | — |
 
 ## Detener
 

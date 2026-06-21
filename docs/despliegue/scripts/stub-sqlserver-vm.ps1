@@ -49,10 +49,13 @@ CREATE DATABASE [$DbName];
 USE [$DbName];
 CREATE TABLE machines (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    nombre NVARCHAR(255) NOT NULL,
-    tipo NVARCHAR(100),
-    created_at DATETIME2 DEFAULT GETDATE(),
-    updated_at DATETIME2 DEFAULT GETDATE()
+    hostname VARCHAR(100) NOT NULL,
+    lab VARCHAR(50) NOT NULL,
+    bench_number INT NOT NULL,
+    maintenance_date DATE,
+    status VARCHAR(20) DEFAULT 'active',
+    assignee VARCHAR(100),
+    assignee_type VARCHAR(20)
 );
 "@
 Write-Host "   Script:"
@@ -67,4 +70,4 @@ Write-Host "=== Stub completado ===" -ForegroundColor Cyan
 Write-Host "Ejecutar bootstrap desde VM Linux:"
 Write-Host "cd backend && npm ci && SQL_SERVER=192.168.1.20 SQL_USER=sa SQL_PASSWORD=$SaPassword SQL_DATABASE=$DbName node scripts/bootstrap.mjs"
 Write-Host ""
-Write-Host "✅ Ya ejecutado — DB $DbName, tabla machines, 12 registros verificados (18/06/2026)" -ForegroundColor Green
+Write-Host "Ya ejecutado — DB $DbName, tabla machines, 12 registros verificados (18/06/2026)" -ForegroundColor Green

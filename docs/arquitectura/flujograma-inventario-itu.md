@@ -1,6 +1,6 @@
-# Flujograma — Ecosistema de Inventario Seguro (EGI)
+# Flujograma — Inventario ITU
 
-> **Asignatura:** Proyecto Integrador (EGI)
+> **Asignatura:** Proyecto Integrador
 > **Sistema:** Inventario ITU — Gestión centralizada de activos informáticos
 > **Tecnologías:** React 19 + Node.js/Express 5 + SQL Server + MongoDB + LDAP/AD + Kubernetes
 
