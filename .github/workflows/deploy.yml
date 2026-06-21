@@ -24,10 +24,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Lowercase repository name (GHCR exige minúsculas)
+        run: echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+
       - name: Variables de imagen
         run: |
-          echo "IMAGE_WEB=${{ env.REGISTRY }}/${{ lower(github.repository) }}/inventario-web:${{ github.sha }}" >> "$GITHUB_ENV"
-          echo "IMAGE_BACKEND=${{ env.REGISTRY }}/${{ lower(github.repository) }}/inventario-backend:${{ github.sha }}" >> "$GITHUB_ENV"
+          echo "IMAGE_WEB=${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/inventario-web:${{ github.sha }}" >> "$GITHUB_ENV"
+          echo "IMAGE_BACKEND=${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/inventario-backend:${{ github.sha }}" >> "$GITHUB_ENV"
 
       - name: Login en GHCR
         uses: docker/login-action@v3
@@ -43,7 +46,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_WEB }}
-            ${{ env.REGISTRY }}/${{ lower(github.repository) }}/inventario-web:latest
+            ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/inventario-web:latest
 
       - name: Build y push backend
         uses: docker/build-push-action@v6
@@ -52,7 +55,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_BACKEND }}
-            ${{ env.REGISTRY }}/${{ lower(github.repository) }}/inventario-backend:latest
+            ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}/inventario-backend:latest
 
       - name: Secret para pull de GHCR
         run: |
