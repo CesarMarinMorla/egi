@@ -2,8 +2,8 @@
 
 **Instituto Tecnológico Universitario** — **Universidad Nacional de Cuyo**
 
-Proyecto integrador correspondiente a las asignaturas Sistemas Operativos: Linux,
-Sistemas Operativos: Windows, Computación en la Nube y Bases de Datos Avanzadas.
+Proyecto integrador correspondiente a las asignaturas Sistemas Operativos Aplicados: Linux,
+Sistemas Operativos Aplicados: Windows, Computación en la Nube y Bases de Datos Avanzadas.
 
 Sistema centralizado de gestión de activos IT para los laboratorios de informática
 del Instituto Tecnológico Universitario.
@@ -53,7 +53,6 @@ El backend sigue una arquitectura en capas (similar a Spring Boot) con **depende
 
 El frontend valida toda la entrada de usuario con schemas de [Zod](https://zod.dev/), sanitiza contra XSS y verifica la sesión JWT almacenada en localStorage antes de usarla.
 
-Documentación adicional: [Seguridad](docs/seguridad.md) · [TASKS](docs/TASKS.md) · [Revisión de producción](docs/revision-produccion.md)
 
 ## Estructura del proyecto
 
@@ -96,6 +95,11 @@ inventario-itu/
 ## Desarrollo local
 
 Hay **3 formas** de correr el proyecto:
+
+> El modo mock se controla en dos variables independientes. Deben coordinarse:
+> - Backend: `MOCK_MODE=true` (default) / `false`
+> - Frontend: `VITE_USE_MOCK=true` (default) / `false`
+> Si una capa queda en `true` y la otra en `false`, el login puede mostrar datos mock mientras el backend espera usuarios reales, o viceversa.
 
 ---
 
@@ -255,7 +259,7 @@ El pipeline de CI/CD (`.github/workflows/`) automatiza:
 
 ## Contribuidores
 
-- Cesar Marin
+- César Marín
 - Maximiliano Lopez
 - Franco Rossi
 - Micaela Becerra

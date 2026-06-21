@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
+const MOCK_MODE = import.meta.env.VITE_USE_MOCK !== "false";
 const DEMO_USERS = ["sysadmin", "manager", "editor", "operator", "readonly"] as const;
 
 export default function Login() {
@@ -68,18 +69,20 @@ export default function Login() {
 					</button>
 				</form>
 
-				<aside className="login-hint">
-					<p>Usuarios mock (cualquier contraseña):</p>
-					<ul>
-						{DEMO_USERS.map((user) => (
-							<li key={user}>
-								<button type="button" className="link-btn" onClick={() => setUsername(user)} disabled={isLoading}>
-									{user}
-								</button>
-							</li>
-						))}
-					</ul>
-				</aside>
+				{MOCK_MODE && (
+					<aside className="login-hint">
+						<p>Usuarios mock (cualquier contraseña):</p>
+						<ul>
+							{DEMO_USERS.map((user) => (
+								<li key={user}>
+									<button type="button" className="link-btn" onClick={() => setUsername(user)} disabled={isLoading}>
+										{user}
+									</button>
+								</li>
+							))}
+						</ul>
+					</aside>
+				)}
 			</div>
 		</div>
 	);
