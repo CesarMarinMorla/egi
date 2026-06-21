@@ -125,7 +125,6 @@ jobs:
         working-directory: backend
 
       - name: Seed SQL Server
-        if: ${{ secrets.SQL_SERVER != '' }}
         run: node scripts/bootstrap.mjs
         working-directory: backend
         env:
