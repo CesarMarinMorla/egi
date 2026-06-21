@@ -1,0 +1,19 @@
+name: Test Runner 3
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  NAMESPACE: inventario-itu
+  REGISTRY: ghcr.io
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - run: echo "Runner test 3 OK"
