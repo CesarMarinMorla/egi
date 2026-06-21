@@ -260,6 +260,8 @@ El pipeline de CI/CD (`.github/workflows/`) automatiza:
 ## Contribuidores
 
 - César Marín
-- Maximiliano Lopez
+- Maximiliano Lopez (`lopez.maximiliano@uncuyo.edu.ar`)
 - Franco Rossi
 - Micaela Becerra
+
+<-- Permisos grupos CI/CD verificado 2026-06-21 -->
