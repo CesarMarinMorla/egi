@@ -1,0 +1,25 @@
+name: Test Runner 5
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  NAMESPACE: inventario-itu
+  REGISTRY: ghcr.io
+
+jobs:
+  first:
+    runs-on: self-hosted
+    steps:
+      - run: echo "First job OK"
+  second:
+    needs: first
+    runs-on: self-hosted
+    steps:
+      - run: echo "Second job OK"
