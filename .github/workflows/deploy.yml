@@ -107,7 +107,7 @@ jobs:
           sleep 5
           POD=$(kubectl get pod -l app=inventario-backend -n "${{ env.NAMESPACE }}" -o jsonpath='{.items[0].metadata.name}')
           kubectl exec "$POD" -n "${{ env.NAMESPACE }}" -- sh -c "
-            curl -sf http://localhost:3001/health | grep -q status && echo 'SMOKE OK' || (echo 'SMOKE FAILED' && exit 1)
+            wget -q -O - http://localhost:3001/health | grep -q status && echo 'SMOKE OK' || (echo 'SMOKE FAILED' && exit 1)
           "
 
       - name: Resumen core
