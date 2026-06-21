@@ -50,6 +50,8 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 - [x] **Grupos AD con sufijo por laboratorio** — `GRP_Editor_Lab101`, `GRP_Operator_Lab102`, etc. con validación frontend actualizada
 - [x] **Sincronización de grupos en updateUser** — remueve al usuario de grupos viejos y lo agrega a los nuevos al editar
 - [x] **Búsqueda LDAP scoped a OU=EGI** — `listUsers()` ahora busca dentro de `OU=EGI,DC=itu,DC=local`
+- [x] **Integración AD con SQL Server** — script `database/sql/ad-sqlserver-logins.sql`
+- [x] **Creación de usuarios desde el frontend en `OU=EGI`**
 
 ### Próximo sprint (testing)
 
