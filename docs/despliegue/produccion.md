@@ -114,13 +114,33 @@ git push main
 
 | Componente | Estado |
 |---|---|
-| **Frontend** | `http://192.168.1.50:30080` — accesible desde LAN |
-| **Backend** | `MOCK_MODE=false` — conectando a SQL Server, MongoDB y AD reales |
-| **SQL Server** | `192.168.1.20:1433` — DB `inventario_itu`, tabla `machines`, 12 registros ✅ |
-| **Active Directory** | `192.168.1.10:389` — autenticación LDAP verificada |
-| **MongoDB** | In-cluster (`inventario-db:27017`) — colección `hardware` |
-| **Network Policies** | Default-deny + reglas explícitas para cada flujo |
-| **Última verificación** | 18/06/2026 |
+| **Frontend** | Accesible desde LAN y WAN vía pfSense |
+| **Backend** | `MOCK_MODE=false` |
+| **SQL Server** | `192.168.1.20`, instancia `ITULAB`, DB `inventario_itu` ✅ |
+| **Active Directory** | `192.168.1.10` — `OU=EGI` con grupos por laboratorio (`GRP_Editor_Lab101`, `GRP_Operator_Lab102`, etc.) ✅ |
+| **MongoDB** | Auth activada — usuario `egi_user` ✅ |
+| **Integración AD → SQL Server** | Vía script `ad-sqlserver-logins.sql` ✅ |
+| **Network Policies** | Default-deny ✅ |
+| **Última verificación** | 21/06/2026 |
+
+## Credenciales de servicio
+
+| Servicio | Usuario / Bind | Contraseña | Notas |
+|---|---|---|---|
+| SQL Server | `sa` | `Mysql123` | Instancia `ITULAB` |
+| MongoDB | `egi_user` | `EgiMongo2026!` | `authSource=admin` |
+| LDAP (bind) | `svc_egi_ldap` | `EgiLdap2026!` | — |
+| pfSense | `admin` | `Itu12345!` | — |
+
+### Usuarios de prueba (Active Directory)
+
+| Usuario | Contraseña |
+|---|---|
+| `test_sysadmin` | `Test2026!` |
+| `test_manager` | `Test2026!` |
+| `test_editor` | `Test2026!` |
+| `test_operator` | `Test2026!` |
+| `test_readonly` | `Test2026!` |
 
 ## Detener
 
