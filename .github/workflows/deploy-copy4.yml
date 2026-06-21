@@ -1,0 +1,29 @@
+name: Deploy Copy 4
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  NAMESPACE: inventario-itu
+  REGISTRY: ghcr.io
+
+jobs:
+  deploy-core:
+    name: Core — desplegar cluster sin datos
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Variables de imagen
+        run: |
+          echo "IMAGE_WEB=${{ env.REGISTRY }}/${{ github.repository }}/inventario-web:${{ github.sha }}" >> "$GITHUB_ENV"
+          echo "IMAGE_BACKEND=${{ env.REGISTRY }}/${{ github.repository }}/inventario-backend:${{ github.sha }}" >> "$GITHUB_ENV"
+      - name: Verificar variables
+        run: |
+          echo "IMAGE_WEB=${{ env.IMAGE_WEB }}"
+          echo "IMAGE_BACKEND=${{ env.IMAGE_BACKEND }}"
