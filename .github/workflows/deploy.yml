@@ -135,12 +135,12 @@ jobs:
         run: node scripts/bootstrap.mjs
         working-directory: backend
         env:
-          SQL_SERVER: ${{ secrets.SQL_SERVER != '' && secrets.SQL_SERVER || '192.168.1.20' }}
-          SQL_PORT: ${{ secrets.SQL_PORT != '' && secrets.SQL_PORT || '1433' }}
-          SQL_USER: ${{ secrets.SQL_USER != '' && secrets.SQL_USER || 'sa' }}
-          SQL_PASSWORD: ${{ secrets.SQL_PASSWORD != '' && secrets.SQL_PASSWORD || 'Mysql123' }}
-          SQL_DATABASE: ${{ secrets.SQL_DATABASE != '' && secrets.SQL_DATABASE || 'inventario_itu' }}
-          SQL_ENCRYPT: ${{ secrets.SQL_ENCRYPT != '' && secrets.SQL_ENCRYPT || 'false' }}
+          SQL_SERVER: 192.168.1.20
+          SQL_PORT: 1433
+          SQL_USER: sa
+          SQL_PASSWORD: Mysql123
+          SQL_DATABASE: inventario_itu
+          SQL_ENCRYPT: false
 
       - name: Seed MongoDB (ConfigMap + Job idempotente)
         run: |
