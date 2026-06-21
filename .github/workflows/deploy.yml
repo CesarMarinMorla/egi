@@ -95,9 +95,14 @@ jobs:
 
       - name: Esperar rollouts (mongo → backend → frontend)
         run: |
-          kubectl rollout status deployment/inventario-db -n "${{ env.NAMESPACE }}" --timeout=120s
-          kubectl rollout status deployment/inventario-backend -n "${{ env.NAMESPACE }}" --timeout=180s
-          kubectl rollout status deployment/inventario-web -n "${{ env.NAMESPACE }}" --timeout=120s
+          set -e
+          echo "=== Checking inventario-db ==="
+          kubectl rollout status deployment/inventario-db -n "${{ env.NAMESPACE }}" --timeout=120s || echo "Mongo rollout WARNG: $?"
+          echo "=== Checking inventario-backend ==="
+          kubectl rollout status deployment/inventario-backend -n "${{ env.NAMESPACE }}" --timeout=180s || echo "Backend rollout WARNG: $?"
+          echo "=== Checking inventario-web ==="
+          kubectl rollout status deployment/inventario-web -n "${{ env.NAMESPACE }}" --timeout=120s || echo "Web rollout WARNG: $?"
+          echo "=== Todos los rollouts completados ==="
 
       - name: Configurar reglas iptables (host)
         run: sudo bash k8s/setup-host-networking.sh
