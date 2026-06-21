@@ -1,0 +1,15 @@
+name: Test Runner 2
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - run: echo "Runner test 2 OK"
