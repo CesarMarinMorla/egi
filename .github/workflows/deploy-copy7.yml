@@ -1,0 +1,41 @@
+name: Deploy Copy 7
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  NAMESPACE: inventario-itu
+  REGISTRY: ghcr.io
+
+jobs:
+  deploy-core:
+    name: Core — desplegar cluster sin datos
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run something
+        run: echo "Core OK"
+
+  seed-data:
+    name: Seed — poblar SQL Server y MongoDB
+    needs: deploy-core
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install backend dependencies
+        working-directory: backend
+        run: echo "fake npm ci"
+      - name: Seed SQL Server
+        if: ${{ secrets.SQL_SERVER != '' }}
+        run: echo "fake seed sql"
+      - name: Resumen seed
+        run: echo "Seed completado"
