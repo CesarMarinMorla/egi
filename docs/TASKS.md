@@ -69,7 +69,7 @@ El acceso desde el host es vía **Adapter 1: Bridged** (`172.22.74.x`) apuntando
 - [ ] Leer `docs/revision-produccion.md` — prioridades pendientes para el próximo deploy
 - [ ] Revisar `docs/seguridad.md` — estado completo de seguridad y hoja de ruta
 - [ ] Revisar `docs/issues-deploy-github-actions.md` — issues del pipeline CI/CD
-- [ ] Rate limiting en `/api/auth/login` (express-rate-limit, auto-desactivado en mock)
+- [x] Rate limiting en `/api/auth/login` (express-rate-limit, auto-desactivado en mock) — Franco PR #7
 - [x] MongoDB auth en docker-compose (init script + credenciales)
 - [x] Sincronizar `docs/seguridad.md` con cambios ya aplicados
 
@@ -79,7 +79,7 @@ El acceso desde el host es vía **Adapter 1: Bridged** (`172.22.74.x`) apuntando
 - [x] MachineDetail: acortar mensaje de error sin acceso
 - [ ] Corregir typo en healthcheck docker-compose: `sqlservr` → `sqlservr`
 - [ ] Agregar confirmación en `FORCE_RESET` de bootstrap.mjs
-- [ ] Agregar `.nvmrc` con `20` en la raíz
+- [x] Agregar `.nvmrc` con `20` en la raíz — Franco PR #7
 
 ### Investigación
 
