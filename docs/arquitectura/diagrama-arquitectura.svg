@@ -1,0 +1,144 @@
+<svg width="100%" viewBox="0 0 680 820" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Diagrama de arquitectura EGI — Inventario ITU</title>
+<desc>Arquitectura con PC anfitriona Windows con VirtualBox, 4 VMs: pfSense firewall, Active Directory, SQL Server y Lubuntu con Minikube corriendo 3 pods con NetworkPolicies Calico.</desc>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <style>
+    text { font-family: sans-serif; }
+    .th { font-size: 14px; font-weight: 500; fill: #2C2C2A; }
+    .ts { font-size: 12px; fill: #5F5E5A; }
+    .c-gray-rect  { fill: #F1EFE8; stroke: #888780; }
+    .c-blue-rect  { fill: #E6F1FB; stroke: #185FA5; }
+    .c-blue-th    { fill: #0C447C; }
+    .c-blue-ts    { fill: #185FA5; }
+    .c-coral-rect { fill: #FAECE7; stroke: #993C1D; }
+    .c-coral-th   { fill: #4A1B0C; }
+    .c-coral-ts   { fill: #712B13; }
+    .c-purple-rect{ fill: #EEEDFE; stroke: #534AB7; }
+    .c-purple-th  { fill: #26215C; }
+    .c-purple-ts  { fill: #3C3489; }
+    .c-amber-rect { fill: #FAEEDA; stroke: #854F0B; }
+    .c-amber-th   { fill: #412402; }
+    .c-amber-ts   { fill: #633806; }
+    .c-teal-rect  { fill: #E1F5EE; stroke: #0F6E56; }
+    .c-teal-th    { fill: #04342C; }
+    .c-teal-ts    { fill: #085041; }
+    .c-green-rect { fill: #EAF3DE; stroke: #3B6D11; }
+    .c-green-th   { fill: #173404; }
+    .c-green-ts   { fill: #27500A; }
+    @media (prefers-color-scheme: dark) {
+      .th { fill: #D3D1C7; }
+      .ts { fill: #888780; }
+      .c-gray-rect  { fill: #444441; stroke: #888780; }
+      .c-blue-rect  { fill: #0C447C; stroke: #85B7EB; }
+      .c-blue-th    { fill: #B5D4F4; } .c-blue-ts { fill: #85B7EB; }
+      .c-coral-rect { fill: #712B13; stroke: #F0997B; }
+      .c-coral-th   { fill: #F5C4B3; } .c-coral-ts { fill: #F0997B; }
+      .c-purple-rect{ fill: #3C3489; stroke: #AFA9EC; }
+      .c-purple-th  { fill: #CECBF6; } .c-purple-ts { fill: #AFA9EC; }
+      .c-amber-rect { fill: #633806; stroke: #EF9F27; }
+      .c-amber-th   { fill: #FAC775; } .c-amber-ts { fill: #EF9F27; }
+      .c-teal-rect  { fill: #085041; stroke: #5DCAA5; }
+      .c-teal-th    { fill: #9FE1CB; } .c-teal-ts { fill: #5DCAA5; }
+      .c-green-rect { fill: #27500A; stroke: #97C459; }
+      .c-green-th   { fill: #C0DD97; } .c-green-ts { fill: #97C459; }
+    }
+  </style>
+</defs>
+
+<!-- PC ANFITRIONA -->
+<rect x="20" y="20" width="640" height="780" rx="16" class="c-gray-rect" stroke-width="0.5"/>
+<text class="th" x="340" y="46" text-anchor="middle">PC anfitriona — Windows + VirtualBox</text>
+<text class="ts" x="340" y="64" text-anchor="middle">Red interna: 192.168.1.0/24</text>
+
+<!-- INTERNET -->
+<rect x="220" y="78" width="240" height="44" rx="8" class="c-blue-rect" stroke-width="0.5"/>
+<text class="th c-blue-th" x="340" y="96" text-anchor="middle">Internet / LAN del aula</text>
+<text class="ts c-blue-ts" x="340" y="112" text-anchor="middle">Acceso externo puerto 80</text>
+
+<line x1="340" y1="122" x2="340" y2="148" stroke="#185FA5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+<!-- VM1 pfSense -->
+<rect x="140" y="148" width="400" height="52" rx="8" class="c-coral-rect" stroke-width="0.5"/>
+<text class="th c-coral-th" x="340" y="169" text-anchor="middle">VM1 — pfSense (firewall perimetral)</text>
+<text class="ts c-coral-ts" x="340" y="187" text-anchor="middle">WAN: IP aula · LAN: 192.168.1.254 · NAT → :30080</text>
+
+<!-- pfSense → VM2 AD -->
+<path d="M220 200 L220 248" fill="none" stroke="#993C1D" stroke-width="1.2" marker-end="url(#arrow)"/>
+<!-- pfSense → VM3 SQL -->
+<path d="M460 200 L460 248" fill="none" stroke="#993C1D" stroke-width="1.2" marker-end="url(#arrow)"/>
+<!-- pfSense → VM4 -->
+<path d="M340 200 L340 330" fill="none" stroke="#993C1D" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+<!-- VM2 Active Directory -->
+<rect x="36" y="248" width="280" height="58" rx="8" class="c-purple-rect" stroke-width="0.5"/>
+<text class="th c-purple-th" x="176" y="268" text-anchor="middle">VM2 — Active Directory</text>
+<text class="ts c-purple-ts" x="176" y="284" text-anchor="middle">Windows Server</text>
+<text class="ts c-purple-ts" x="176" y="298" text-anchor="middle">192.168.1.10 · puerto 389 LDAP</text>
+
+<!-- VM3 SQL Server -->
+<rect x="364" y="248" width="280" height="58" rx="8" class="c-amber-rect" stroke-width="0.5"/>
+<text class="th c-amber-th" x="504" y="268" text-anchor="middle">VM3 — SQL Server</text>
+<text class="ts c-amber-ts" x="504" y="284" text-anchor="middle">Windows Server · instancia ITULAB</text>
+<text class="ts c-amber-ts" x="504" y="298" text-anchor="middle">192.168.1.20 · puerto 1433 · DB: inventario_itu</text>
+
+<!-- VM4 Lubuntu + Minikube -->
+<rect x="36" y="330" width="608" height="446" rx="12" class="c-teal-rect" stroke-width="0.5"/>
+<text class="th c-teal-th" x="340" y="353" text-anchor="middle">VM4 — Lubuntu · 192.168.1.50</text>
+<text class="ts c-teal-ts" x="340" y="370" text-anchor="middle">Minikube con CNI Calico · namespace: inventario-itu · NodePort :30080</text>
+
+<!-- Banner NetworkPolicies -->
+<rect x="52" y="382" width="576" height="26" rx="6" class="c-teal-rect" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="ts c-teal-ts" x="340" y="399" text-anchor="middle">NetworkPolicies activas: deny-all-default + 7 reglas explícitas (Calico)</text>
+
+<!-- Pod frontend -->
+<rect x="56" y="422" width="172" height="66" rx="8" class="c-blue-rect" stroke-width="0.5"/>
+<text class="th c-blue-th" x="142" y="445" text-anchor="middle">Pod: frontend</text>
+<text class="ts c-blue-ts" x="142" y="461" text-anchor="middle">React + nginx</text>
+<text class="ts c-blue-ts" x="142" y="477" text-anchor="middle">NodePort :30080</text>
+
+<!-- Pod backend -->
+<rect x="254" y="422" width="172" height="66" rx="8" class="c-teal-rect" stroke-width="0.5"/>
+<text class="th c-teal-th" x="340" y="445" text-anchor="middle">Pod: backend</text>
+<text class="ts c-teal-ts" x="340" y="461" text-anchor="middle">Node.js · Express</text>
+<text class="ts c-teal-ts" x="340" y="477" text-anchor="middle">ClusterIP :3001</text>
+
+<!-- Pod MongoDB -->
+<rect x="452" y="422" width="172" height="66" rx="8" class="c-green-rect" stroke-width="0.5"/>
+<text class="th c-green-th" x="538" y="445" text-anchor="middle">Pod: MongoDB</text>
+<text class="ts c-green-ts" x="538" y="461" text-anchor="middle">MongoDB 7</text>
+<text class="ts c-green-ts" x="538" y="477" text-anchor="middle">ClusterIP :27017</text>
+
+<!-- NP frontend → backend -->
+<line x1="228" y1="455" x2="252" y2="455" stroke="#0F6E56" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text class="ts" x="240" y="446" text-anchor="middle" font-size="9">NP ✓</text>
+
+<!-- NP backend → MongoDB -->
+<line x1="426" y1="455" x2="450" y2="455" stroke="#0F6E56" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text class="ts" x="438" y="446" text-anchor="middle" font-size="9">NP ✓</text>
+
+<!-- backend → SQL Server (ruta en L hacia VM3) -->
+<path d="M340 488 L340 540 L504 540 L504 308" fill="none" stroke="#854F0B" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#arrow)"/>
+<text class="ts" x="496" y="535" text-anchor="end" font-size="9">NP ✓ egress :1433</text>
+
+<!-- backend → AD (ruta en L hacia VM2) -->
+<path d="M268 488 L268 560 L176 560 L176 308" fill="none" stroke="#534AB7" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#arrow)"/>
+<text class="ts" x="276" y="555" text-anchor="start" font-size="9">NP ✓ egress :389</text>
+
+<!-- LEYENDA -->
+<rect x="52" y="600" width="576" height="158" rx="8" class="c-gray-rect" stroke-width="0.5"/>
+<text class="th" x="72" y="622">Leyenda</text>
+<line x1="72" y1="645" x2="116" y2="645" stroke="#185FA5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text class="ts" x="124" y="649">Tráfico externo (internet / LAN)</text>
+<line x1="72" y1="668" x2="116" y2="668" stroke="#993C1D" stroke-width="1.2" fill="none" marker-end="url(#arrow)"/>
+<text class="ts" x="124" y="672">pfSense distribuye a VMs internas</text>
+<line x1="72" y1="691" x2="116" y2="691" stroke="#0F6E56" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text class="ts" x="124" y="695">Tráfico permitido por NetworkPolicy (intra-cluster)</text>
+<line x1="72" y1="714" x2="116" y2="714" stroke="#854F0B" stroke-width="1" stroke-dasharray="5 3" fill="none" marker-end="url(#arrow)"/>
+<text class="ts" x="124" y="718">Egress a VM externa con IP fija (NP explícita)</text>
+<text class="ts" x="360" y="645">ClusterIP = no accesible desde fuera del cluster</text>
+<text class="ts" x="360" y="665">deny-all-default bloquea todo lo no listado</text>
+<text class="ts" x="360" y="685">NP ✓ = NetworkPolicy explícita activa</text>
+</svg>
