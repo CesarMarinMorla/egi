@@ -69,11 +69,45 @@ jobs:
       - name: Namespace
         run: kubectl apply -f k8s/namespace/
 
+      - name: Secret de MongoDB
+        run: |
+          kubectl create secret generic inventario-db-secret \
+            --namespace="${{ env.NAMESPACE }}" \
+            --dry-run=client -o yaml \
+            --from-literal=MONGO_INITDB_ROOT_USERNAME="${{ secrets.MONGO_USER }}" \
+            --from-literal=MONGO_INITDB_ROOT_PASSWORD="${{ secrets.MONGO_PASSWORD }}" \
+            | kubectl apply -f -
+
       - name: MongoDB (motor únicamente)
         run: |
           kubectl apply -f k8s/mongo/deployment.yaml
           kubectl apply -f k8s/mongo/service.yaml
           kubectl apply -f k8s/mongo/pvc.yaml
+
+      - name: Generar Secret del Backend desde GitHub Secrets
+        run: |
+          kubectl create secret generic inventario-backend-secret \
+            --namespace="${{ env.NAMESPACE }}" \
+            --dry-run=client -o yaml \
+            --from-literal=PORT="3001" \
+            --from-literal=JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            --from-literal=MOCK_MODE="false" \
+            --from-literal=SQL_SERVER="${{ secrets.SQL_SERVER }}" \
+            --from-literal=SQL_PORT="${{ secrets.SQL_PORT }}" \
+            --from-literal=SQL_USER="${{ secrets.SQL_USER }}" \
+            --from-literal=SQL_PASSWORD="${{ secrets.SQL_PASSWORD }}" \
+            --from-literal=SQL_DATABASE="${{ secrets.SQL_DATABASE }}" \
+            --from-literal=SQL_ENCRYPT="${{ secrets.SQL_ENCRYPT }}" \
+            --from-literal=SQL_TRUST_SERVER_CERTIFICATE="true" \
+            --from-literal=MONGO_URI="${{ secrets.MONGO_URI }}" \
+            --from-literal=MONGO_DB_NAME="${{ secrets.MONGO_DB_NAME }}" \
+            --from-literal=LDAP_URL="${{ secrets.LDAP_URL }}" \
+            --from-literal=LDAP_BIND_DN="${{ secrets.LDAP_BIND_DN }}" \
+            --from-literal=LDAP_BIND_PASSWORD="${{ secrets.LDAP_BIND_PASSWORD }}" \
+            --from-literal=LDAP_SEARCH_BASE="${{ secrets.LDAP_SEARCH_BASE }}" \
+            --from-literal=LDAP_SEARCH_FILTER="${{ secrets.LDAP_SEARCH_FILTER }}" \
+            --from-literal=CORS_ORIGINS="${{ secrets.CORS_ORIGINS }}" \
+            | kubectl apply -f -
 
       - name: Backend
         run: kubectl apply -f k8s/backend/
@@ -135,12 +169,12 @@ jobs:
         run: node scripts/bootstrap.mjs
         working-directory: backend
         env:
-          SQL_SERVER: 192.168.1.20
-          SQL_PORT: 1433
-          SQL_USER: sa
-          SQL_PASSWORD: Mysql123
-          SQL_DATABASE: inventario_itu
-          SQL_ENCRYPT: false
+          SQL_SERVER: ${{ secrets.SQL_SERVER }}
+          SQL_PORT: ${{ secrets.SQL_PORT }}
+          SQL_USER: ${{ secrets.SQL_USER }}
+          SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+          SQL_DATABASE: ${{ secrets.SQL_DATABASE }}
+          SQL_ENCRYPT: ${{ secrets.SQL_ENCRYPT }}
 
       - name: Seed MongoDB (ConfigMap + Job idempotente)
         run: |
