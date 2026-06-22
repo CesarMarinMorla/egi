@@ -2,15 +2,15 @@
 
 ## 1. Listo — Infraestructura base
 
-- [x] pfSense: regla NAT (puerto 80 → `192.168.1.50:30080`)
+- [x] pfSense: regla NAT (puerto 80 → `192.168.1.50:80`)
 - [x] VM Linux con Minikube, Docker, Calico, iptables persistence
-- [x] NodePort 30080 expuesto y accesible desde la LAN
+- [x] NodePort 30080 expuesto y accesible desde el host vía pfSense WAN (`172.22.74.175:80`)
 - [x] Reglas iptables host: DNAT, FORWARD, DOCKER-USER (script `k8s/setup-host-networking.sh`)
 - [x] Persistencia de reglas iptables post-reboot (systemd)
 - [x] Smoke test CI/CD post-deploy en `.github/workflows/deploy.yml`
 - [x] GitHub Secrets configurados en UI de GitHub
 - [x] Deploy manual en Minikube (build + kubectl apply, modo mock)
-- [x] Frontend accesible desde AD (`192.168.1.10`) y Lubuntu (`192.168.1.x`)
+- [x] Frontend accesible desde el host (`http://172.22.74.175`) y desde AD (`192.168.1.10` vía red interna)
 - [x] Conectividad AD verificada — ping, puertos 389 y 636 funcionan
 
 ## 2. Listo — Seguridad aplicada (commits en `develop`)
@@ -37,6 +37,11 @@ Estos cambios están commiteados en `develop` y ya pueden deployarse manualmente
 - [x] **Active Directory** — bind credentials configurados en secret, autenticación real funcionando
 
 Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
+
+### Nota de red
+La red `192.168.1.x` es una **red interna de VirtualBox** (Adapter 2: Internal Network "lan server").
+Solo las VMs se ven entre sí en esa red. El host Windows NO tiene acceso directo a `192.168.1.x`.
+El acceso desde el host es vía **Adapter 1: Bridged** (`172.22.74.x`) apuntando a la WAN de pfSense (`172.22.74.175`).
 
 ## 4. Pendiente — No bloquea setup inicial
 
@@ -84,7 +89,6 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 
 ## 5. Producción (post-setup)
 
-- [ ] pfSense NAT reflection para acceso desde host Windows
 - [ ] HTTPS (TLS termination en pfSense o nginx)
 - [x] MongoDB auth en el cluster
 - [ ] CSRF protection (evaluar si aplica con Bearer tokens)
@@ -92,6 +96,22 @@ Con SQL Server + AD funcionando, ya no hay roadblocks para el setup inicial.
 
 ## Información confirmada
 
+### Topología de red
+```
+Host Windows ←→ VirtualBox Bridged (172.22.74.x) ←→ VMs
+  WAN: pfSense (172.22.74.175)
+  └── NAT port 80 → Lubuntu (172.22.74.14)
+       └── iptables DNAT → Minikube (192.168.49.2:30080)
+
+Red interna VirtualBox (solo entre VMs):
+  pfSense LAN: 192.168.1.254
+  Lubuntu:     192.168.1.50
+  SQL Server:  192.168.1.20
+  AD:          192.168.1.10
+```
+
+- [x] **El host NO está en la red interna (192.168.1.x)** — accede vía WAN de pfSense (172.22.74.175)
+- [x] **NAT Reflection no aplica** — el host no está detras de pfSense, está en la red bridge de VirtualBox
 - [x] **Dominio AD:** `itu.local`
 - [x] **Atributo de login LDAP:** `sAMAccountName`
 - [x] **Usuario de servicio bind LDAP:** `CN=svc_egi_ldap,OU=EGI,DC=itu,DC=local` / `EgiLdap2026!`
